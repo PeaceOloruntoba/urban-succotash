@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/axios";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function PodcastListPage() {
   const [items, setItems] = useState<any[]>([]);
