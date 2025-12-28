@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center rounded px-4 py-2 text-sm transition-colors; }
+  .btn-primary { @apply btn bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900; }
+  .btn-outline { @apply btn border border-blue-700 text-blue-700 hover:bg-blue-50; }
+  .badge-live { @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-red-600 text-white; }
+}
+
+@layer utilities {
+  .brand-gradient { @apply bg-gradient-to-br from-blue-800 via-blue-700 to-blue-500; }
+}

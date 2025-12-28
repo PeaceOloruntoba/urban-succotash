@@ -12,22 +12,13 @@ export default function LandingPage() {
             Listen to experts, realtors, and developers. Discover insights and
             stay informed.
           </p>
-          <div className="flex gap-3">
-            <Link
-              to="/podcasts"
-              className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-            >
-              Explore Podcasts
-            </Link>
-            <Link
-              to="/register"
-              className="px-4 py-2 rounded border hover:bg-gray-50"
-            >
-              Get Started
-            </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/podcasts" className="btn-primary">Explore Podcasts</Link>
+            <Link to="/live" className="btn-outline">See Live</Link>
+            <Link to="/register" className="btn-outline">Get Started</Link>
           </div>
         </div>
-        <div className="aspect-video bg-gray-100 rounded-lg" />
+        <div className="aspect-video rounded-lg brand-gradient" />
       </section>
       <section className="py-10 grid sm:grid-cols-3 gap-6">
         <div className="p-4 border rounded-lg">
@@ -47,6 +38,26 @@ export default function LandingPage() {
           <p className="text-sm text-gray-600">
             Responsive design works on mobile and desktop.
           </p>
+        </div>
+      </section>
+      <section className="py-10">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Live & Upcoming</h2>
+          <Link to="/live" className="text-blue-700 text-sm">View all</Link>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="border rounded p-4">
+            <div className="badge-live mb-2">● Live now</div>
+            <div className="font-medium">Market Insights with Admin</div>
+            <div className="text-sm text-gray-600">Tap to join the live stream</div>
+            <div className="mt-3"><Link to="/live/listen" className="btn-primary">Listen live</Link></div>
+          </div>
+          <div className="border rounded p-4">
+            <div className="text-xs text-gray-500 mb-2">Upcoming • Today 5:00 PM</div>
+            <div className="font-medium">Financing Tips for Buyers</div>
+            <div className="text-sm text-gray-600">Set a reminder and join on time</div>
+            <div className="mt-3"><Link to="/live" className="btn-outline">See details</Link></div>
+          </div>
         </div>
       </section>
     </div>
