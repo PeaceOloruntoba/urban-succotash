@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../components/AudioPlayer";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { api } from "../lib/axios";
 import { connectWs, type WSMessage } from "../lib/ws";
 
