@@ -3,7 +3,9 @@ import AudioPlayer from "../components/AudioPlayer";
 
 export default function LiveListenerPage() {
   const [isLive, setIsLive] = useState(true);
+  setIsLive(true)
   const [liveTitle, setLiveTitle] = useState("Market Insights with Admin");
+  setLiveTitle("Community Discussion Live");
   const [sourceUrl, setSourceUrl] = useState<string>("");
 
   useEffect(() => {

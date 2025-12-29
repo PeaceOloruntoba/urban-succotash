@@ -9,9 +9,9 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import LivePage from "./pages/LivePage";
 import LiveListenerPage from "./pages/LiveListenerPage";
 import LiveStudio from "./pages/admin/LiveStudio";
+import LivePage from "./pages/LivePage";
 
 export default function App() {
   return (
