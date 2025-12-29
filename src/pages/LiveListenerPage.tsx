@@ -1,19 +1,49 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../components/AudioPlayer";
+import { useSearchParams } from "react-router-dom";
+import { api } from "../lib/axios";
+import { connectWs, type WSMessage } from "../lib/ws";
 
 export default function LiveListenerPage() {
-  const [isLive, setIsLive] = useState(true);
-  setIsLive(true)
-  const [liveTitle, setLiveTitle] = useState("Market Insights with Admin");
-  setLiveTitle("Community Discussion Live");
+  const [params] = useSearchParams();
+  const sessionId = params.get("session");
+  const [isLive, setIsLive] = useState(false);
+  const [liveTitle, setLiveTitle] = useState("Live Session");
   const [sourceUrl, setSourceUrl] = useState<string>("");
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Placeholder: When backend live is ready, fetch a live stream URL (e.g., HLS/DASH).
-    // setIsLive(true/false) based on backend status.
-    // For design, we show a sample audio stream url or keep empty.
-    setSourceUrl("");
-  }, []);
+    if (!sessionId) return;
+    api.get(`/live/${sessionId}`).then(r => {
+      const item = r.data?.data?.item;
+      if (item) {
+        setLiveTitle(item.title || "Live Session");
+        setIsLive(item.status === "live");
+        if (item.playback_url) setSourceUrl(item.playback_url);
+      }
+    });
+
+    // Open WS and listen to studio events
+    const ws = connectWs();
+    wsRef.current = ws;
+    ws.onmessage = (e) => {
+      try {
+        const msg: WSMessage = JSON.parse(String(e.data));
+        if (msg.channel !== `studio:${sessionId}`) return;
+        if (msg.type === "session.started") {
+          setIsLive(true);
+          if (msg.payload?.playback_url) setSourceUrl(msg.payload.playback_url);
+        } else if (msg.type === "session.stopped") {
+          setIsLive(false);
+        } else if (msg.type === "session.updated") {
+          if (msg.payload?.title) setLiveTitle(msg.payload.title);
+        }
+      } catch {}
+    };
+    return () => {
+      try { ws.close(); } catch {}
+    };
+  }, [sessionId]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
