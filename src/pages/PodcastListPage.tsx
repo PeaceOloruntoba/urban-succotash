@@ -28,26 +28,32 @@ export default function PodcastListPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <h1 className="text-xl font-semibold mb-4">Podcasts</h1>
+      <div className="flex items-end justify-between mb-4">
+        <h1 className="text-2xl font-semibold">Podcasts</h1>
+        <div className="text-sm text-gray-500">Fresh and trending episodes</div>
+      </div>
       {loading ? (
         <div className="py-6"><Spinner /></div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((p) => (
-            <Link
-              key={p.id}
-              to={`/podcasts/${p.id}`}
-              className="border rounded p-4 hover:shadow"
-            >
-              <div className="font-medium">{p.title}</div>
-              <div className="text-sm text-gray-600 line-clamp-2">
-                {p.description}
+            <Link key={p.id} to={`/podcasts/${p.id}`} className="group rounded-xl overflow-hidden border hover:shadow-lg transition">
+              {p.cover_url ? (
+                <div className="relative aspect-[16/9] bg-gray-100">
+                  <img src={p.cover_url} alt={p.title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                </div>
+              ) : (
+                <div className="aspect-[16/9] bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-blue-700">🎧</div>
+              )}
+              <div className="p-4">
+                <div className="font-semibold line-clamp-1">{p.title}</div>
+                <div className="text-sm text-gray-600 line-clamp-2 mt-1">{p.description}</div>
               </div>
             </Link>
           ))}
         </div>
       )}
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-6 justify-center">
         <button
           className="px-3 py-1 rounded border"
           disabled={page === 0}

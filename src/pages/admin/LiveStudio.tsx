@@ -216,6 +216,15 @@ export default function LiveStudio() {
       if (podcastId) {
         // Immediately publish so it appears in public lists and is playable
         try { await api.post(`/podcasts/${podcastId}/publish`); } catch {}
+        // Attach selected platform users as speakers and optional guest
+        try {
+          for (const uid of selectedUserIds) {
+            await api.post(`/podcasts/${podcastId}/speakers`, { userId: uid });
+          }
+          if (speakerName.trim()) {
+            await api.post(`/podcasts/${podcastId}/speakers`, { name: speakerName.trim() });
+          }
+        } catch {}
       }
       toast.success("Podcast uploaded" + (podcastId ? " & published" : ""));
       setPodTitle("");
@@ -223,6 +232,8 @@ export default function LiveStudio() {
       setPodAudioB64("");
       setPodCoverB64("");
       setPodDuration("");
+      setSelectedUserIds([]);
+      setSpeakerName("");
     } catch (e: any) {
       toast.error(e?.response?.data?.message || "Upload failed");
     } finally {
