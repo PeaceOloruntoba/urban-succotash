@@ -1,14 +1,29 @@
 import { useState } from "react";
 import { api } from "../../lib/axios";
+import { toast } from "sonner";
+import Spinner from "../../components/Spinner";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await api.post("/auth/forgot-password", { email });
-    setSent(true);
+    setError(null);
+    setLoading(true);
+    try {
+      await api.post("/auth/forgot-password", { email });
+      setSent(true);
+      toast.success("If the email exists, a reset link has been sent");
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || "Failed to send reset link";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,8 +40,9 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <button className="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
-            Send reset link
+          {error && <div className="text-red-600 text-sm">{error}</div>}
+          <button disabled={loading} className="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2">
+            {loading && <Spinner size={16} />}<span>{loading ? "Sending..." : "Send reset link"}</span>
           </button>
         </form>
       )}

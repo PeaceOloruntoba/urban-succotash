@@ -3,6 +3,8 @@ import AudioPlayer from "../components/AudioPlayer";
 import { useSearchParams } from "react-router";
 import { api } from "../lib/axios";
 import { connectWs, type WSMessage } from "../lib/ws";
+import Spinner from "../components/Spinner";
+import { toast } from "sonner";
 
 export default function LiveListenerPage() {
   const [params] = useSearchParams();
@@ -11,17 +13,26 @@ export default function LiveListenerPage() {
   const [liveTitle, setLiveTitle] = useState("Live Session");
   const [sourceUrl, setSourceUrl] = useState<string>("");
   const wsRef = useRef<WebSocket | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!sessionId) return;
-    api.get(`/live/${sessionId}`).then(r => {
-      const item = r.data?.data?.item;
-      if (item) {
-        setLiveTitle(item.title || "Live Session");
-        setIsLive(item.status === "live");
-        if (item.playback_url) setSourceUrl(item.playback_url);
+    (async () => {
+      setLoading(true);
+      try {
+        const r = await api.get(`/live/${sessionId}`);
+        const item = r.data?.data?.item;
+        if (item) {
+          setLiveTitle(item.title || "Live Session");
+          setIsLive(item.status === "live");
+          if (item.playback_url) setSourceUrl(item.playback_url);
+        }
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || "Failed to load session");
+      } finally {
+        setLoading(false);
       }
-    });
+    })();
 
     // Open WS and listen to studio events
     const ws = connectWs();
@@ -52,7 +63,9 @@ export default function LiveListenerPage() {
         <h1 className="text-xl font-semibold">{liveTitle}</h1>
       </div>
       <p className="text-gray-600">Join the live broadcast and listen in real-time.</p>
-      {isLive ? (
+      {loading ? (
+        <div className="py-6"><Spinner /></div>
+      ) : isLive ? (
         sourceUrl ? (
           <AudioPlayer src={sourceUrl} />
         ) : (

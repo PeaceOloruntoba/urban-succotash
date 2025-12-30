@@ -12,6 +12,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import LiveListenerPage from "./pages/LiveListenerPage";
 import LiveStudio from "./pages/admin/LiveStudio";
 import LivePage from "./pages/LivePage";
+import { Toaster } from "sonner";
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
           </Routes>
         </main>
         <Footer />
+        <Toaster richColors position="top-right" />
       </div>
     </BrowserRouter>
   );

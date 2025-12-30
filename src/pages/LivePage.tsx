@@ -1,14 +1,27 @@
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { api } from "../lib/axios";
+import Spinner from "../components/Spinner";
+import { toast } from "sonner";
 
 export default function LivePage() {
   const [now, setNow] = useState<any[]>([]);
   const [upcoming, setUpcoming] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/live/now").then(r => setNow(r.data?.data?.items ?? []));
-    api.get("/live/upcoming").then(r => setUpcoming(r.data?.data?.items ?? []));
+    (async () => {
+      setLoading(true);
+      try {
+        const [a, b] = await Promise.all([api.get("/live/now"), api.get("/live/upcoming")]);
+        setNow(a.data?.data?.items ?? []);
+        setUpcoming(b.data?.data?.items ?? []);
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || "Failed to load live sessions");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   return (
@@ -20,7 +33,9 @@ export default function LivePage() {
 
       <section>
         <h2 className="text-lg font-medium mb-3">Live now</h2>
-        {now.length === 0 ? (
+        {loading ? (
+          <div className="py-6"><Spinner /></div>
+        ) : now.length === 0 ? (
           <div className="text-sm text-gray-600">No live session is active right now.</div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
@@ -38,7 +53,9 @@ export default function LivePage() {
 
       <section>
         <h2 className="text-lg font-medium mb-3">Upcoming</h2>
-        {upcoming.length === 0 ? (
+        {loading ? (
+          <div className="py-6"><Spinner /></div>
+        ) : upcoming.length === 0 ? (
           <div className="text-sm text-gray-600">No upcoming sessions.</div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/axios";
 import { Link } from "react-router";
+import Spinner from "../components/Spinner";
+import { toast } from "sonner";
 
 export default function PodcastListPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -20,6 +22,7 @@ export default function PodcastListPage() {
         },
       })
       .then((r) => setItems(r.data?.data?.items ?? []))
+      .catch((e) => toast.error(e?.response?.data?.message || "Failed to load podcasts"))
       .finally(() => setLoading(false));
   }, [page]);
 
@@ -27,7 +30,7 @@ export default function PodcastListPage() {
     <div className="max-w-6xl mx-auto px-4 py-6">
       <h1 className="text-xl font-semibold mb-4">Podcasts</h1>
       {loading ? (
-        <div>Loading...</div>
+        <div className="py-6"><Spinner /></div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((p) => (

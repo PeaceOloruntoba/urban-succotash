@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { api } from "../../lib/axios";
 import { useAuthStore } from "../../stores/auth";
+import { toast } from "sonner";
+import Spinner from "../../components/Spinner";
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -25,9 +27,12 @@ export default function RegisterPage() {
       const d = r.data?.data || {};
       setTokens(d.accessToken, d.refreshToken);
       setUser(d.user || null);
+      toast.success("Account created");
       nav("/");
     } catch (e: any) {
-      setError(e?.response?.data?.message || "Registration failed");
+      const msg = e?.response?.data?.message || "Registration failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -58,11 +63,8 @@ export default function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <div className="text-red-600 text-sm">{error}</div>}
-        <button
-          disabled={loading}
-          className="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-        >
-          {loading ? "..." : "Register"}
+        <button disabled={loading} className="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2">
+          {loading && <Spinner size={16} />}<span>{loading ? "Creating..." : "Register"}</span>
         </button>
       </form>
       <div className="text-sm mt-3">

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { api } from "../../lib/axios";
 import { useAuthStore } from "../../stores/auth";
+import { toast } from "sonner";
+import Spinner from "../../components/Spinner";
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -20,9 +22,12 @@ export default function LoginPage() {
       const d = r.data?.data || {};
       setTokens(d.accessToken, d.refreshToken);
       setUser(d.user || null);
+      toast.success("Logged in successfully");
       nav("/");
     } catch (e: any) {
-      setError(e?.response?.data?.message || "Login failed");
+      const msg = e?.response?.data?.message || "Login failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -47,11 +52,8 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <div className="text-red-600 text-sm">{error}</div>}
-        <button
-          disabled={loading}
-          className="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-        >
-          {loading ? "..." : "Login"}
+        <button disabled={loading} className="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2">
+          {loading && <Spinner size={16} />}<span>{loading ? "Logging in..." : "Login"}</span>
         </button>
       </form>
       <div className="text-sm mt-3 flex justify-between">

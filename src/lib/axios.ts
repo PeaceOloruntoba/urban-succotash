@@ -27,6 +27,7 @@ api.interceptors.response.use(
         useAuthStore.getState().logout();
       }
     }
+    console.log("API error:", err);
     return Promise.reject(err);
   }
 );
