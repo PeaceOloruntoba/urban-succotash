@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from "react-router";
 import { useAuthStore } from "../../stores/auth";
-import { LogOut, Home, Calendar, Mic2, Building2 } from "lucide-react";
+import { LogOut, Home, Calendar, Mic2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminLayout() {
@@ -32,14 +32,7 @@ export default function AdminLayout() {
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors"
             >
               <Calendar size={20} />
-              Events
-            </Link>
-            <Link
-              to="/admin/podcasts"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors"
-            >
-              <Mic2 size={20} />
-              Podcasts
+              Manage Events
             </Link>
             <Link
               to="/admin/live"

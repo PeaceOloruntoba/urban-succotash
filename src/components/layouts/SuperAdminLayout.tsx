@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from "react-router";
 import { useAuthStore } from "../../stores/auth";
-import { LogOut, Home, Calendar, Mic2, Building2, Users, Settings, Shield } from "lucide-react";
+import { LogOut, Home, Calendar, Mic2, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SuperAdminLayout() {
@@ -24,39 +24,18 @@ export default function SuperAdminLayout() {
           </div>
           <nav className="space-y-2">
             <Link
-              to="/admin/super"
+              to="/admin"
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-900 transition-colors"
             >
               <Home size={20} />
               Dashboard
             </Link>
             <Link
-              to="/admin/super/users"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-900 transition-colors"
-            >
-              <Users size={20} />
-              User Management
-            </Link>
-            <Link
               to="/admin/events"
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-900 transition-colors"
             >
               <Calendar size={20} />
-              Events
-            </Link>
-            <Link
-              to="/admin/super/properties"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-900 transition-colors"
-            >
-              <Building2 size={20} />
-              Properties
-            </Link>
-            <Link
-              to="/admin/podcasts"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-900 transition-colors"
-            >
-              <Mic2 size={20} />
-              Podcasts
+              Manage Events
             </Link>
             <Link
               to="/admin/live"

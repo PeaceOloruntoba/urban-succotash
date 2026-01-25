@@ -11,8 +11,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
+import UnifiedDashboard from "./pages/admin/UnifiedDashboard";
 import EventManagement from "./pages/admin/EventManagement";
 import LiveListenerPage from "./pages/LiveListenerPage";
 import LiveStudio from "./pages/admin/LiveStudio";
@@ -51,7 +50,7 @@ function AppRoutes() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
 
-      {/* Admin Routes */}
+      {/* Admin Routes (Unified for Admin and SuperAdmin) */}
       <Route
         element={
           <ProtectedRoute requireAuth>
@@ -59,23 +58,11 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<UnifiedDashboard />} />
+        <Route path="/admin/super" element={<UnifiedDashboard />} />
         <Route path="/admin/events" element={<EventManagement />} />
         <Route path="/admin/events/:id" element={<EventManagement />} />
         <Route path="/admin/live" element={<LiveStudio />} />
-      </Route>
-
-      {/* Super Admin Routes */}
-      <Route
-        element={
-          <ProtectedRoute requireAuth requireRole="superadmin">
-            <SuperAdminLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/admin/super" element={<SuperAdminDashboard />} />
-        <Route path="/admin/super/users" element={<SuperAdminDashboard />} />
-        <Route path="/admin/super/properties" element={<SuperAdminDashboard />} />
       </Route>
     </Routes>
   );

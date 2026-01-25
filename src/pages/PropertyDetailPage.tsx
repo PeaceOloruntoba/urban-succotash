@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
-import { useAuthStore } from "../stores/auth";
+// import { useAuthStore } from "../stores/auth";
 
 type Property = {
   id: string;
@@ -38,7 +38,6 @@ type PropertyFeature = {
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
-  const { user } = useAuthStore();
   const [property, setProperty] = useState<Property | null>(null);
   const [images, setImages] = useState<PropertyImage[]>([]);
   const [features, setFeatures] = useState<PropertyFeature[]>([]);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { api } from "../../lib/axios";
 import { toast } from "sonner";
-import { Plus, X, Upload, Trash2, Save } from "lucide-react";
+import { X, Upload, Trash2, Save } from "lucide-react";
 
 type Event = {
   id: string;
@@ -54,6 +54,7 @@ type Ticket = {
 export default function EventManagement() {
   const { id } = useParams();
   const [event, setEvent] = useState<Event | null>(null);
+  console.log(event);
   const [images, setImages] = useState<EventImage[]>([]);
   const [speakers, setSpeakers] = useState<EventSpeaker[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
