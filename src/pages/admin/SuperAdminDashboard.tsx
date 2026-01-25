@@ -217,11 +217,11 @@ export default function SuperAdminDashboard() {
           <div className="card">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Events</h2>
-              <Link to="/admin/events/new" className="btn btn-primary">
+              <Link to="/admin/events" className="btn btn-primary">
                 Create Event
               </Link>
             </div>
-            <p className="text-slate-600">Event management interface coming soon...</p>
+            <p className="text-slate-600">Click "Create Event" to manage events.</p>
           </div>
         )}
 

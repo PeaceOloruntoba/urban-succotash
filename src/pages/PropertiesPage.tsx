@@ -20,6 +20,7 @@ type Property = {
   listing_type: string;
   featured: boolean;
   created_at: string;
+  primary_image_url?: string | null;
 };
 
 export default function PropertiesPage() {
@@ -157,8 +158,18 @@ export default function PropertiesPage() {
                     Featured
                   </span>
                 )}
-                <div className="aspect-video bg-slate-200 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-slate-400">No Image</span>
+                <div className="aspect-video bg-slate-200 rounded-lg mb-4 overflow-hidden">
+                  {property.primary_image_url ? (
+                    <img
+                      src={property.primary_image_url}
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-slate-400">No Image</span>
+                    </div>
+                  )}
                 </div>
                 <h3 className="font-semibold text-lg text-slate-900 mb-2 line-clamp-2">
                   {property.title}

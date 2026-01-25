@@ -10,6 +10,7 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
+import EventManagement from "./pages/admin/EventManagement";
 import LiveListenerPage from "./pages/LiveListenerPage";
 import LiveStudio from "./pages/admin/LiveStudio";
 import LivePage from "./pages/LivePage";
@@ -43,6 +44,8 @@ export default function App() {
 
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/super" element={<SuperAdminDashboard />} />
+            <Route path="/admin/events" element={<EventManagement />} />
+            <Route path="/admin/events/:id" element={<EventManagement />} />
             <Route path="/admin/live" element={<LiveStudio />} />
           </Routes>
         </main>
