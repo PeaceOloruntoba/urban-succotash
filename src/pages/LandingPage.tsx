@@ -1,76 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router";
 import {
   Mic2,
   Radio,
   Play,
   Building2,
-  TrendingUp,
   ChevronRight,
-  ShieldCheck,
   Globe,
   Calendar,
   Heart,
   MapPin,
-  Ticket,
   ArrowRight,
+  Clock,
 } from "lucide-react";
-import { api } from "../lib/axios";
-import { toast } from "sonner";
-
-type Event = {
-  id: string;
-  title: string;
-  description: string | null;
-  short_description: string | null;
-  cover_image_url: string | null;
-  event_type: string;
-  start_date: string;
-  end_date: string;
-  venue_type: string;
-  venue_address: string | null;
-  venue_city: string | null;
-  venue_state: string | null;
-  online_platform: string | null;
-  featured: boolean;
-};
+import { useEventsStore } from "../stores/events";
 
 export default function LandingPage() {
-  const [latestEvent, setLatestEvent] = useState<Event | null>(null);
-  const [loadingEvent, setLoadingEvent] = useState(true);
+  const { upcomingEvents, fetchUpcomingEvents } = useEventsStore();
 
   useEffect(() => {
-    loadLatestEvent();
-  }, []);
+    fetchUpcomingEvents(3);
+  }, [fetchUpcomingEvents]);
 
-  const loadLatestEvent = async () => {
-    try {
-      setLoadingEvent(true);
-      const res = await api.get("/events", {
-        params: { featured: true, limit: 1, sortBy: "start_date", sortDir: "asc" },
-      });
-      const events = res.data?.data?.items || [];
-      if (events.length > 0) {
-        setLatestEvent(events[0]);
-      }
-    } catch (err: any) {
-      // Silently fail - event section will just not show
-    } finally {
-      setLoadingEvent(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -151,105 +102,94 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 3. LATEST UPCOMING EVENT - FEATURED SECTION */}
-      {!loadingEvent && latestEvent && (
-        <section className="py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white relative overflow-hidden">
-          <div 
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-          <div className="max-w-7xl mx-auto px-4 relative z-10">
+      {/* 3. UPCOMING EVENTS */}
+      {upcomingEvents.length > 0 && (
+        <section className="py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white">
+          <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 bg-blue-700/50 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-                <Calendar size={16} />
-                Upcoming Event
-              </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
-                Don't Miss Out
-              </h2>
-              <p className="text-blue-100 text-lg max-w-2xl mx-auto">
-                Join industry leaders for exclusive insights and networking opportunities
-              </p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Upcoming Events</h2>
+              <p className="text-blue-100 text-lg">Don't miss out on these exclusive events</p>
             </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  {latestEvent.cover_image_url ? (
-                    <img
-                      src={latestEvent.cover_image_url}
-                      alt={latestEvent.title}
-                      className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-xl"
-                    />
-                  ) : (
-                    <div className="w-full h-64 md:h-80 bg-white/10 rounded-2xl flex items-center justify-center">
-                      <Calendar size={64} className="text-white/30" />
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                      {latestEvent.title}
-                    </h3>
-                    {latestEvent.short_description && (
-                      <p className="text-blue-100 text-lg leading-relaxed">
-                        {latestEvent.short_description}
-                      </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              {upcomingEvents.map((event) => {
+                const startDate = new Date(event.start_date);
+                const formatDateShort = (date: Date) => {
+                  return date.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  });
+                };
+                const formatTime = (date: Date) => {
+                  return date.toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                };
+                return (
+                  <div
+                    key={event.id}
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:bg-white/20 transition-all"
+                  >
+                    {event.cover_image_url ? (
+                      <img
+                        src={event.cover_image_url}
+                        alt={event.title}
+                        className="w-full h-48 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-blue-700 flex items-center justify-center">
+                        <Calendar size={48} className="text-blue-300" />
+                      </div>
                     )}
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-blue-100">
-                      <Calendar size={20} className="text-blue-300" />
-                      <span className="font-semibold">{formatDate(latestEvent.start_date)}</span>
-                    </div>
-                    {latestEvent.venue_type === "physical" || latestEvent.venue_type === "hybrid" ? (
-                      <div className="flex items-center gap-3 text-blue-100">
-                        <MapPin size={20} className="text-blue-300" />
-                        <span>
-                          {latestEvent.venue_address}
-                          {latestEvent.venue_city && `, ${latestEvent.venue_city}`}
-                          {latestEvent.venue_state && `, ${latestEvent.venue_state}`}
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Clock size={16} className="text-blue-300" />
+                        <span className="text-sm text-blue-100">
+                          {formatDateShort(startDate)} • {formatTime(startDate)}
                         </span>
                       </div>
-                    ) : (
-                      <div className="flex items-center gap-3 text-blue-100">
-                        <Globe size={20} className="text-blue-300" />
-                        <span>Online Event</span>
+                      <h3 className="text-xl font-bold mb-2 line-clamp-2">{event.title}</h3>
+                      {event.short_description && (
+                        <p className="text-blue-100 text-sm mb-4 line-clamp-2">
+                          {event.short_description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mb-4">
+                        {event.venue_type === "physical" || event.venue_type === "hybrid" ? (
+                          <div className="flex items-center gap-1 text-blue-200 text-sm">
+                            <MapPin size={14} />
+                            <span>{event.venue_city || "Physical Event"}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-blue-200 text-sm">
+                            <Globe size={14} />
+                            <span>Online Event</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 bg-blue-700/50 rounded-full text-sm font-medium capitalize">
-                        {latestEvent.event_type}
-                      </span>
-                      <span className="px-3 py-1 bg-blue-700/50 rounded-full text-sm font-medium capitalize">
-                        {latestEvent.venue_type}
-                      </span>
+                      <Link
+                        to={`/events/${event.id}`}
+                        className="block w-full px-6 py-3 bg-white text-blue-900 rounded-lg font-bold hover:bg-blue-50 transition-all text-center"
+                      >
+                        Get Tickets
+                      </Link>
                     </div>
                   </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    <Link
-                      to={`/events/${latestEvent.id}`}
-                      className="flex-1 px-8 py-4 bg-white text-blue-900 rounded-xl font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2 shadow-lg"
-                    >
-                      <Ticket size={20} />
-                      Get Your Ticket
-                    </Link>
-                    <Link
-                      to={`/events/${latestEvent.id}`}
-                      className="flex-1 px-8 py-4 border-2 border-white text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-                    >
-                      View Details
-                      <ArrowRight size={20} />
-                    </Link>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
+            {upcomingEvents.length >= 3 && (
+              <div className="text-center mt-8">
+                <Link
+                  to="/events"
+                  className="inline-flex items-center gap-2 px-6 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-all"
+                >
+                  View All Events
+                  <ArrowRight size={18} />
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       )}

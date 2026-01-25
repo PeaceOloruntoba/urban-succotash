@@ -27,11 +27,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
     set({ accessToken: null, refreshToken: null, user: null });
   },
   loadFromStorage: () => {
     const a = localStorage.getItem("accessToken");
     const r = localStorage.getItem("refreshToken");
-    set({ accessToken: a, refreshToken: r });
+    const uStr = localStorage.getItem("user");
+    const u = uStr ? JSON.parse(uStr) : null;
+    set({ accessToken: a, refreshToken: r, user: u });
   },
 }));

@@ -21,7 +21,25 @@ export default function LoginPage() {
       const r = await api.post("/auth/login", { email, password });
       const d = r.data?.data || {};
       setTokens(d.accessToken, d.refreshToken);
-      setUser(d.user || null);
+      
+      // Fetch user info including roles
+      if (d.accessToken) {
+        try {
+          const meRes = await api.get("/auth/me");
+          const userData = meRes.data?.data || {};
+          setUser({
+            ...d.user,
+            role: userData.roles?.[0] || "user",
+            roles: userData.roles || [],
+          });
+        } catch (err) {
+          // If /auth/me fails, just use the basic user data
+          setUser(d.user || null);
+        }
+      } else {
+        setUser(d.user || null);
+      }
+      
       toast.success("Logged in successfully");
       nav("/");
     } catch (e: any) {

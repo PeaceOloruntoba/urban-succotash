@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link } from "react-router";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
 import { useAuthStore } from "../stores/auth";
@@ -10,7 +10,6 @@ import {
   Clock,
   Ticket,
   Users,
-  ArrowRight,
   Instagram,
   Twitter,
   Facebook,
@@ -20,6 +19,7 @@ import {
   CheckCircle,
   Lock,
 } from "lucide-react";
+import ShareButton from "../components/ShareButton";
 
 type Event = {
   id: string;
@@ -91,7 +91,6 @@ const getSocialIcon = (platform: string) => {
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [event, setEvent] = useState<Event | null>(null);
   const [images, setImages] = useState<EventImage[]>([]);
@@ -110,8 +109,8 @@ export default function EventDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [virtualAccessLink, setVirtualAccessLink] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [checkingAccess, setCheckingAccess] = useState(false);
+  const [, setAccessToken] = useState<string | null>(null);
+  const [, setCheckingAccess] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -287,6 +286,15 @@ export default function EventDetailPage() {
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700"></div>
         )}
+        {/* Share Button Overlay */}
+        <div className="absolute top-6 right-6 z-10">
+          <ShareButton
+            url={`/events/${event.id}`}
+            title={event.title}
+            description={event.short_description || undefined}
+            showQR={true}
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">
