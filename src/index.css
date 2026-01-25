@@ -1,68 +1,119 @@
 @import "tailwindcss";
 
+:root {
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e40af;
+  --blue-900: #1e3a8a;
+  --blue-950: #172554;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
 }
 
 .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  background-color: #1d4ed8;
+  background-color: var(--blue-800);
   color: #ffffff;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: #1e40af;
+  background-color: var(--blue-900);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
 }
 
 .btn-primary:active {
-  background-color: #1e3a8a;
+  background-color: var(--blue-950);
+  transform: translateY(0);
 }
 
 .btn-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  border: 1px solid #1d4ed8;
-  color: #1d4ed8;
+  border: 2px solid var(--blue-800);
+  color: var(--blue-800);
   background-color: transparent;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-outline:hover {
-  background-color: #eff6ff;
+  background-color: var(--blue-50);
+  border-color: var(--blue-900);
+  color: var(--blue-900);
+}
+
+.btn-secondary {
+  background-color: var(--blue-600);
+  color: #ffffff;
+}
+
+.btn-secondary:hover {
+  background-color: var(--blue-700);
 }
 
 .badge-live {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.125rem 0.5rem;
+  padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
+  font-weight: 600;
   border-radius: 9999px;
   background-color: #dc2626;
   color: #ffffff;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .brand-gradient {
-  background-image: linear-gradient(
-    to bottom right,
-    #1e40af,
-    #1d4ed8,
-    #3b82f6
-  );
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 50%, var(--blue-700) 100%);
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-md p-6 border border-slate-200;
+}
+
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+}
+
+.text-primary {
+  color: var(--blue-800);
+}
+
+.bg-primary {
+  background-color: var(--blue-800);
+}
+
+.bg-primary-dark {
+  background-color: var(--blue-900);
+}
+
+.border-primary {
+  border-color: var(--blue-800);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }

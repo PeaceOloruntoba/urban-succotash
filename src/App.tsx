@@ -9,9 +9,14 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 import LiveListenerPage from "./pages/LiveListenerPage";
 import LiveStudio from "./pages/admin/LiveStudio";
 import LivePage from "./pages/LivePage";
+import PropertiesPage from "./pages/PropertiesPage";
+import PropertyDetailPage from "./pages/PropertyDetailPage";
+import EventsPage from "./pages/EventsPage";
+import EventDetailPage from "./pages/EventDetailPage";
 import { Toaster } from "sonner";
 
 export default function App() {
@@ -22,6 +27,10 @@ export default function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/properties/:id" element={<PropertyDetailPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
             <Route path="/podcasts" element={<PodcastListPage />} />
             <Route path="/podcasts/:id" element={<PodcastDetailPage />} />
             <Route path="/live" element={<LivePage />} />
@@ -33,6 +42,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/super" element={<SuperAdminDashboard />} />
             <Route path="/admin/live" element={<LiveStudio />} />
           </Routes>
         </main>

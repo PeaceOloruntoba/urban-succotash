@@ -5,15 +5,19 @@ import { api } from "../lib/axios";
 import { connectWs, type WSMessage } from "../lib/ws";
 import Spinner from "../components/Spinner";
 import { toast } from "sonner";
+import { useAuthStore } from "../stores/auth";
 
 export default function LiveListenerPage() {
   const [params] = useSearchParams();
   const sessionId = params.get("session");
+  const { user } = useAuthStore();
   const [isLive, setIsLive] = useState(false);
   const [liveTitle, setLiveTitle] = useState("Live Session");
   const [sourceUrl, setSourceUrl] = useState<string>("");
   const wsRef = useRef<WebSocket | null>(null);
   const [loading, setLoading] = useState(true);
+  const [speakRequested, setSpeakRequested] = useState(false);
+  const [speakRequestStatus, setSpeakRequestStatus] = useState<"pending" | "approved" | "rejected" | null>(null);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -73,6 +77,58 @@ export default function LiveListenerPage() {
         )
       ) : (
         <div className="border rounded p-4 text-sm text-gray-600">No live session is active right now.</div>
+      )}
+
+      {/* Speak Request */}
+      {isLive && user && sessionId && (
+        <div className="card bg-blue-50 border-blue-200">
+          <h3 className="font-semibold text-blue-900 mb-2">Request to Speak</h3>
+          <p className="text-sm text-slate-600 mb-4">
+            Request permission to speak during this live session. The admin will review your request.
+          </p>
+          {speakRequestStatus === null ? (
+            <button
+              onClick={async () => {
+                try {
+                  await api.post(`/live/${sessionId}/speak-request`);
+                  setSpeakRequested(true);
+                  setSpeakRequestStatus("pending");
+                  toast.success("Speak request submitted!");
+                } catch (err: any) {
+                  if (err.response?.status === 400 && err.response?.data?.message?.includes("already exists")) {
+                    setSpeakRequested(true);
+                    setSpeakRequestStatus("pending");
+                    toast.info("You already have a pending request");
+                  } else {
+                    toast.error(err.response?.data?.message || "Failed to submit request");
+                  }
+                }
+              }}
+              disabled={speakRequested}
+              className="btn btn-primary"
+            >
+              {speakRequested ? "Request Submitted" : "Request to Speak"}
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span
+                className={`px-3 py-1 rounded text-sm font-medium ${
+                  speakRequestStatus === "approved"
+                    ? "bg-green-100 text-green-800"
+                    : speakRequestStatus === "rejected"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-yellow-100 text-yellow-800"
+                }`}
+              >
+                {speakRequestStatus === "approved"
+                  ? "✓ Approved"
+                  : speakRequestStatus === "rejected"
+                  ? "✗ Rejected"
+                  : "⏳ Pending"}
+              </span>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
