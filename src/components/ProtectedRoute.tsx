@@ -6,12 +6,14 @@ type ProtectedRouteProps = {
   children: ReactNode;
   requireAuth?: boolean;
   requireRole?: string;
+  requireAnyRole?: string[];
 };
 
 export default function ProtectedRoute({
   children,
   requireAuth = true,
   requireRole,
+  requireAnyRole,
 }: ProtectedRouteProps) {
   const { user, accessToken } = useAuthStore();
   const location = useLocation();
@@ -26,8 +28,16 @@ export default function ProtectedRoute({
 
   if (requireRole && user) {
     // Check if user has the required role
-    const userRole = (user as any).role || (user as any).roles?.[0];
-    if (userRole !== requireRole) {
+    const roles: string[] = (user as any).roles || ((user as any).role ? [(user as any).role] : []);
+    if (!roles.includes(requireRole)) {
+      return <Navigate to="/" replace />;
+    }
+  }
+
+  if (requireAnyRole && user) {
+    const roles: string[] = (user as any).roles || ((user as any).role ? [(user as any).role] : []);
+    const ok = requireAnyRole.some((r) => roles.includes(r));
+    if (!ok) {
       return <Navigate to="/" replace />;
     }
   }

@@ -41,7 +41,13 @@ export default function LoginPage() {
       }
       
       toast.success("Logged in successfully");
-      nav("/");
+      console.log(d)
+      const roles: string[] = d?.user?.role || [];
+      if (roles.includes("admin") || roles.includes("superadmin")) {
+        nav("/admin/dashboard");
+      } else {
+        nav("/");
+      }
     } catch (e: any) {
       const msg = e?.response?.data?.message || "Login failed";
       setError(msg);

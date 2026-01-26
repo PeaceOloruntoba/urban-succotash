@@ -11,10 +11,10 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
-import UnifiedDashboard from "./pages/admin/UnifiedDashboard";
-import EventManagement from "./pages/admin/EventManagement";
+// import UnifiedDashboard from "./pages/admin/UnifiedDashboard";
+// import EventManagement from "./pages/admin/EventManagement";
 import LiveListenerPage from "./pages/LiveListenerPage";
-import LiveStudio from "./pages/admin/LiveStudio";
+// import LiveStudio from "./pages/admin/LiveStudio";
 import LivePage from "./pages/LivePage";
 import PropertiesPage from "./pages/PropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
@@ -22,6 +22,21 @@ import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminEventsList from "./pages/admin/events/AdminEventsList";
+import AdminEventDetail from "./pages/admin/events/AdminEventDetail";
+import AdminEventEdit from "./pages/admin/events/AdminEventEdit";
+import AdminEventBookings from "./pages/admin/events/AdminEventBookings";
+import AdminPropertiesList from "./pages/admin/properties/AdminPropertiesList";
+import AdminPropertyDetail from "./pages/admin/properties/AdminPropertyDetail";
+import AdminPropertyEdit from "./pages/admin/properties/AdminPropertyEdit";
+import AdminPropertyContacts from "./pages/admin/properties/AdminPropertyContacts";
+import AdminPodcastsList from "./pages/admin/podcasts/AdminPodcastsList";
+import AdminPodcastDetail from "./pages/admin/podcasts/AdminPodcastDetail";
+import AdminPodcastEdit from "./pages/admin/podcasts/AdminPodcastEdit";
+import AdminLiveList from "./pages/admin/live/AdminLiveList";
+import AdminLiveDetail from "./pages/admin/live/AdminLiveDetail";
+import AdminLiveEdit from "./pages/admin/live/AdminLiveEdit";
 
 function AppRoutes() {
   const { loadFromStorage } = useAuthStore();
@@ -50,19 +65,33 @@ function AppRoutes() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
 
-      {/* Admin Routes (Unified for Admin and SuperAdmin) */}
+      {/* Admin Routes (Admin and SuperAdmin) */}
       <Route
         element={
-          <ProtectedRoute requireAuth>
+          <ProtectedRoute requireAuth requireAnyRole={["admin", "superadmin"]}>
             <AdminLayout />
           </ProtectedRoute>
         }
       >
-        <Route path="/admin" element={<UnifiedDashboard />} />
-        <Route path="/admin/super" element={<UnifiedDashboard />} />
-        <Route path="/admin/events" element={<EventManagement />} />
-        <Route path="/admin/events/:id" element={<EventManagement />} />
-        <Route path="/admin/live" element={<LiveStudio />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        {/* Events */}
+        <Route path="/admin/events" element={<AdminEventsList />} />
+        <Route path="/admin/events/:id" element={<AdminEventDetail />} />
+        <Route path="/admin/events/:id/edit" element={<AdminEventEdit />} />
+        <Route path="/admin/events/:id/bookings" element={<AdminEventBookings />} />
+        {/* Properties */}
+        <Route path="/admin/properties" element={<AdminPropertiesList />} />
+        <Route path="/admin/properties/:id" element={<AdminPropertyDetail />} />
+        <Route path="/admin/properties/:id/edit" element={<AdminPropertyEdit />} />
+        <Route path="/admin/properties/:id/contacts" element={<AdminPropertyContacts />} />
+        {/* Podcasts */}
+        <Route path="/admin/podcasts" element={<AdminPodcastsList />} />
+        <Route path="/admin/podcasts/:id" element={<AdminPodcastDetail />} />
+        <Route path="/admin/podcasts/:id/edit" element={<AdminPodcastEdit />} />
+        {/* Live */}
+        <Route path="/admin/live" element={<AdminLiveList />} />
+        <Route path="/admin/live/:id" element={<AdminLiveDetail />} />
+        <Route path="/admin/live/:id/edit" element={<AdminLiveEdit />} />
       </Route>
     </Routes>
   );
