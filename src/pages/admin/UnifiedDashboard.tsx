@@ -66,6 +66,7 @@ type LiveSession = {
   status: string;
   is_live: boolean;
   scheduled_start: string | null;
+  scheduled_at?: string | null;
 };
 
 type Booking = {
