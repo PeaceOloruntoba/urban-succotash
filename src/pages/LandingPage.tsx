@@ -17,6 +17,7 @@ import {
 import { useEventsStore } from "../stores/events";
 import { usePropertiesStore } from "../stores/properties";
 import { usePodcastsStore } from "../stores/podcasts";
+import SEO from "../components/SEO";
 
 export default function LandingPage() {
   const { upcomingEvents, fetchUpcomingEvents } = useEventsStore();
@@ -255,7 +256,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              {featuredProperties.map((property) => (
+              {featuredProperties.map((property: any) => (
                 <Link
                   key={property.id}
                   to={`/properties/${property.id}`}
@@ -322,7 +323,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              {featuredPodcasts.map((podcast) => (
+              {featuredPodcasts.map((podcast: any) => (
                 <Link
                   key={podcast.id}
                   to={`/podcasts/${podcast.id}`}

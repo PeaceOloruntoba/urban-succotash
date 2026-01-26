@@ -137,7 +137,7 @@ export default function UnifiedDashboard() {
 
   const loadProperties = async () => {
     try {
-      const res = await api.get("/properties/admin");
+      const res = await api.get("/properties/admin/list");
       setProperties(res.data?.data?.items || []);
     } catch (err: any) {
       toast.error("Failed to load properties");
@@ -155,7 +155,7 @@ export default function UnifiedDashboard() {
 
   const loadLiveSessions = async () => {
     try {
-      const res = await api.get("/live/sessions");
+      const res = await api.get("/live/sessions", { params: { limit: 100 } });
       setLiveSessions(res.data?.data?.items || []);
     } catch (err: any) {
       toast.error("Failed to load live sessions");
@@ -612,20 +612,20 @@ export default function UnifiedDashboard() {
                     <tr key={session.id} className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="py-3 px-4 font-semibold">{session.title}</td>
                       <td className="py-3 px-4">
-                        {session.is_live ? (
+                        {session.status === "live" || session.is_live ? (
                           <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-800 flex items-center gap-1 w-fit">
                             <Radio size={12} className="animate-pulse" />
                             Live
                           </span>
                         ) : (
-                          <span className="px-2 py-1 text-xs rounded bg-slate-100 text-slate-800">
+                          <span className="px-2 py-1 text-xs rounded bg-slate-100 text-slate-800 capitalize">
                             {session.status}
                           </span>
                         )}
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-600">
-                        {session.scheduled_start
-                          ? new Date(session.scheduled_start).toLocaleString()
+                        {(session.scheduled_at || session.scheduled_start)
+                          ? new Date(session.scheduled_at || session.scheduled_start || "").toLocaleString()
                           : "-"}
                       </td>
                       <td className="py-3 px-4">
