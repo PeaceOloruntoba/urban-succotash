@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { toast } from "sonner";
 import { X, Upload, Trash2, Save } from "lucide-react";

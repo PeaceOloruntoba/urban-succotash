@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useAuthStore } from "./stores/auth";
 import PublicLayout from "./components/layouts/PublicLayout";
 import AdminLayout from "./components/layouts/AdminLayout";
@@ -20,6 +20,7 @@ import PropertiesPage from "./pages/PropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
 import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
+import AboutPage from "./pages/AboutPage";
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -59,6 +60,7 @@ function AppRoutes() {
         <Route path="/podcasts/:id" element={<PodcastDetailPage />} />
         <Route path="/live" element={<LivePage />} />
         <Route path="/live/listen" element={<LiveListenerPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -82,6 +84,7 @@ function AppRoutes() {
         {/* Properties */}
         <Route path="/admin/properties" element={<AdminPropertiesList />} />
         <Route path="/admin/properties/:id" element={<AdminPropertyDetail />} />
+        <Route path="/admin/properties/new" element={<AdminPropertyEdit />} />
         <Route path="/admin/properties/:id/edit" element={<AdminPropertyEdit />} />
         <Route path="/admin/properties/:id/contacts" element={<AdminPropertyContacts />} />
         {/* Podcasts */}

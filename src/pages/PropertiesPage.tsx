@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
+import { Building2 } from "lucide-react";
 
 type Property = {
   id: string;
@@ -30,10 +31,13 @@ export default function PropertiesPage() {
     propertyType: "",
     listingType: "",
     city: "",
+    state: "",
     minPrice: "",
     maxPrice: "",
     bedrooms: "",
     search: "",
+    sortBy: "created_at",
+    sortDir: "desc",
   });
 
   useEffect(() => {
@@ -47,10 +51,13 @@ export default function PropertiesPage() {
       if (filters.propertyType) params.propertyType = filters.propertyType;
       if (filters.listingType) params.listingType = filters.listingType;
       if (filters.city) params.city = filters.city;
+      if (filters.state) params.state = filters.state;
       if (filters.minPrice) params.minPrice = Number(filters.minPrice);
       if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
       if (filters.bedrooms) params.bedrooms = Number(filters.bedrooms);
       if (filters.search) params.search = filters.search;
+      if (filters.sortBy) params.sortBy = filters.sortBy;
+      if (filters.sortDir) params.sortDir = filters.sortDir;
 
       const res = await api.get("/properties", { params });
       setProperties(res.data?.data?.items || []);
@@ -87,7 +94,7 @@ export default function PropertiesPage() {
 
         {/* Filters */}
         <div className="card mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-8 gap-4">
             <input
               type="text"
               placeholder="Search..."
@@ -105,6 +112,8 @@ export default function PropertiesPage() {
               <option value="house">House</option>
               <option value="land">Land</option>
               <option value="commercial">Commercial</option>
+              <option value="service_outlet">Service Outlet</option>
+              <option value="airbnb">Airbnb</option>
             </select>
             <select
               className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
@@ -124,12 +133,50 @@ export default function PropertiesPage() {
               onChange={(e) => handleFilterChange("city", e.target.value)}
             />
             <input
+              type="text"
+              placeholder="State"
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
+              value={filters.state}
+              onChange={(e) => handleFilterChange("state", e.target.value)}
+            />
+            <input
               type="number"
               placeholder="Min Price"
               className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
               value={filters.minPrice}
               onChange={(e) => handleFilterChange("minPrice", e.target.value)}
             />
+            <input
+              type="number"
+              placeholder="Max Price"
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
+              value={filters.maxPrice}
+              onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Bedrooms"
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
+              value={filters.bedrooms}
+              onChange={(e) => handleFilterChange("bedrooms", e.target.value)}
+            />
+            <select
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
+              value={filters.sortBy}
+              onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+            >
+              <option value="created_at">Newest</option>
+              <option value="price">Price</option>
+              <option value="updated_at">Recently Updated</option>
+            </select>
+            <select
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent"
+              value={filters.sortDir}
+              onChange={(e) => handleFilterChange("sortDir", e.target.value)}
+            >
+              <option value="desc">Desc</option>
+              <option value="asc">Asc</option>
+            </select>
             <button onClick={applyFilters} className="btn btn-primary">
               Apply Filters
             </button>
@@ -158,16 +205,21 @@ export default function PropertiesPage() {
                     Featured
                   </span>
                 )}
-                <div className="aspect-video bg-slate-200 rounded-lg mb-4 overflow-hidden">
+                <div className="aspect-video bg-slate-200 rounded-lg mb-4 overflow-hidden relative">
                   {property.primary_image_url ? (
-                    <img
-                      src={property.primary_image_url}
-                      alt={property.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <>
+                      <img
+                        src={property.primary_image_url}
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-2 right-2 bg-white/60 text-blue-900 text-xs font-bold px-2 py-1 rounded">
+                        SAFENEST
+                      </div>
+                    </>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-slate-400">No Image</span>
+                      <Building2 size={32} className="text-slate-400" />
                     </div>
                   )}
                 </div>

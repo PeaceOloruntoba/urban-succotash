@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { Mic, Calendar } from "lucide-react";

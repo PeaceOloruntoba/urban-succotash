@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/axios";
 import { toast } from "sonner";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 type Stats = {
   users: number;

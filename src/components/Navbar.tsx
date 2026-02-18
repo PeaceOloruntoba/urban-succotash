@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth";
 import { useState } from "react";
 import { Menu, X, Home, Building2, Calendar, Mic2, FileText } from "lucide-react";

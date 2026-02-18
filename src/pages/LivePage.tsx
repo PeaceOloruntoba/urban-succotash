@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../lib/axios";
 import Spinner from "../components/Spinner";

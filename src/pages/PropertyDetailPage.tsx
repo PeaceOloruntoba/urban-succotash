@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
+import { Building2, ChevronLeft, ChevronRight, X } from "lucide-react";
 // import { useAuthStore } from "../stores/auth";
 
 type Property = {
@@ -49,6 +50,8 @@ export default function PropertyDetailPage() {
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -63,6 +66,8 @@ export default function PropertyDetailPage() {
       setProperty(res.data?.data?.item || null);
       setImages(res.data?.data?.images || []);
       setFeatures(res.data?.data?.features || []);
+      const primaryIdx = (res.data?.data?.images || []).findIndex((img: PropertyImage) => img.is_primary);
+      setActiveIndex(primaryIdx >= 0 ? primaryIdx : 0);
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to load property");
     } finally {
@@ -113,7 +118,7 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const primaryImage = images.find((img) => img.is_primary) || images[0];
+  const primaryImage = images[activeIndex];
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -128,29 +133,87 @@ export default function PropertyDetailPage() {
             {/* Images */}
             <div className="card mb-6">
               {primaryImage ? (
-                <img
-                  src={primaryImage.image_url}
-                  alt={property.title}
-                  className="w-full h-96 object-cover rounded-lg"
-                />
+                <div className="relative">
+                  <img
+                    src={primaryImage.image_url}
+                    alt={property.title}
+                    className="w-full h-96 object-cover rounded-lg cursor-zoom-in"
+                    onClick={() => setLightboxOpen(true)}
+                  />
+                  <div className="absolute bottom-2 right-2 bg-white/60 text-blue-900 text-xs font-bold px-2 py-1 rounded">
+                    SAFENEST
+                  </div>
+                </div>
               ) : (
                 <div className="w-full h-96 bg-slate-200 rounded-lg flex items-center justify-center">
-                  <span className="text-slate-400">No Image Available</span>
+                  <Building2 size={40} className="text-slate-400" />
                 </div>
               )}
               {images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2 mt-4">
-                  {images.slice(1, 5).map((img) => (
-                    <img
+                <div className="mt-4 flex gap-2 overflow-x-auto">
+                  {images.map((img, idx) => (
+                    <button
                       key={img.id}
-                      src={img.image_url}
-                      alt=""
-                      className="w-full h-20 object-cover rounded"
-                    />
+                      onClick={() => setActiveIndex(idx)}
+                      aria-label={`View image ${idx + 1}`}
+                      className={`relative flex-shrink-0 rounded ${activeIndex === idx ? "ring-2 ring-blue-800" : ""}`}
+                    >
+                      <img
+                        src={img.image_url}
+                        alt=""
+                        className="w-24 h-20 object-cover rounded"
+                      />
+                      {img.is_primary && (
+                        <span className="absolute top-1 left-1 bg-blue-600 text-white text-[10px] px-1 py-0.5 rounded">Primary</span>
+                      )}
+                    </button>
                   ))}
                 </div>
               )}
             </div>
+
+            {lightboxOpen && primaryImage && (
+              <div
+                className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
+                onClick={() => setLightboxOpen(false)}
+              >
+                <div className="absolute top-4 right-4">
+                  <button
+                    className="p-2 bg-white/10 hover:bg-white/20 rounded text-white"
+                    aria-label="Close"
+                    onClick={() => setLightboxOpen(false)}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <button
+                  className="absolute left-4 p-2 bg-white/10 hover:bg-white/20 rounded text-white"
+                  aria-label="Previous"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
+                  }}
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <img
+                  src={primaryImage.image_url}
+                  alt=""
+                  className="max-h-[80vh] max-w-[90vw] object-contain rounded"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <button
+                  className="absolute right-4 p-2 bg-white/10 hover:bg-white/20 rounded text-white"
+                  aria-label="Next"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveIndex((prev) => (prev + 1) % images.length);
+                  }}
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+            )}
 
             {/* Property Details */}
             <div className="card mb-6">

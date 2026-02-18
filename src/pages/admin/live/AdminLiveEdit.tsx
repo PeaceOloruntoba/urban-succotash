@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { toast } from "sonner";

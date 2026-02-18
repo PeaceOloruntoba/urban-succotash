@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
 import AudioPlayer from "../components/AudioPlayer";

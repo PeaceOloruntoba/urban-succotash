@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { MapPin, Building2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 export default function AdminPropertiesList() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -22,6 +23,18 @@ export default function AdminPropertiesList() {
       }
     })();
   }, []);
+  const deleteProperty = async (id: string) => {
+    if (!confirm("Delete this property?")) return;
+    try {
+      setDeletingId(id);
+      await api.delete(`/properties/${id}`);
+      setItems((prev) => prev.filter((p) => p.id !== id));
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Failed to delete property");
+    } finally {
+      setDeletingId(null);
+    }
+  };
   return (
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-4">
@@ -49,12 +62,19 @@ export default function AdminPropertiesList() {
               {items.map((p) => (
                 <tr key={p.id} className="border-t hover:bg-slate-50">
                   <td className="py-3 px-4 flex items-center gap-2"><Building2 size={14}/> <span className="font-medium">{p.title || p.name}</span></td>
-                  <td className="py-3 px-4 text-slate-600 flex items-center gap-2"><MapPin size={14}/> {p.location || p.city || '-'}</td>
+                  <td className="py-3 px-4 text-slate-600 flex items-center gap-2"><MapPin size={14}/> {p.address ? `${p.address}, ${p.city}` : (p.city || '-')}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       <Link to={`/admin/properties/${p.id}`} className="px-2 py-1 rounded border hover:bg-slate-50">View</Link>
                       <Link to={`/admin/properties/${p.id}/edit`} className="px-2 py-1 rounded border hover:bg-slate-50">Edit</Link>
                       <Link to={`/admin/properties/${p.id}/contacts`} className="px-2 py-1 rounded border hover:bg-slate-50">Contacts</Link>
+                      <button
+                        onClick={() => deleteProperty(p.id)}
+                        disabled={deletingId === p.id}
+                        className="px-2 py-1 rounded border hover:bg-red-50 text-red-600 border-red-200"
+                      >
+                        {deletingId === p.id ? "Deleting..." : "Delete"}
+                      </button>
                     </div>
                   </td>
                 </tr>

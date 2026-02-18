@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { useAuthStore } from "../../stores/auth";
 import { toast } from "sonner";

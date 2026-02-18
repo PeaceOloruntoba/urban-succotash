@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import {
   Mic2,
   Radio,
@@ -25,9 +25,9 @@ export default function LandingPage() {
   const { featuredPodcasts, fetchFeaturedPodcasts } = usePodcastsStore();
 
   useEffect(() => {
-    fetchUpcomingEvents(1); // Only next event
-    fetchFeaturedProperties(3);
-    fetchFeaturedPodcasts(3);
+    fetchUpcomingEvents(1);
+    fetchFeaturedProperties(6);
+    fetchFeaturedPodcasts(2);
   }, [fetchUpcomingEvents, fetchFeaturedProperties, fetchFeaturedPodcasts]);
 
 
@@ -90,7 +90,49 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 2. TRUST / STATS BAR */}
+      {/* 2. ABOUT SECTION */}
+      <section className="max-w-7xl mx-auto px-4 py-12 md:py-16">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">About SafeNest</h2>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              A platform where real estate excellence meets community. Explore verified listings, tune into live podcasts,
+              and join exclusive events designed to help you make confident decisions.
+            </p>
+            <div className="mt-6">
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900 transition-all"
+              >
+                Read More
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
+          <div className="p-6 md:p-8 bg-white border border-slate-200 rounded-2xl">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <div className="text-3xl font-extrabold text-blue-900">500+</div>
+                <div className="text-sm text-slate-600">Premium Properties</div>
+              </div>
+              <div>
+                <div className="text-3xl font-extrabold text-blue-900">10k+</div>
+                <div className="text-sm text-slate-600">Active Users</div>
+              </div>
+              <div>
+                <div className="text-3xl font-extrabold text-blue-900">50+</div>
+                <div className="text-sm text-slate-600">Live Sessions</div>
+              </div>
+              <div>
+                <div className="text-3xl font-extrabold text-blue-900">100%</div>
+                <div className="text-sm text-slate-600">Verified Listings</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. TRUST / STATS BAR */}
       <section className="bg-blue-50 border-y border-blue-100 py-10">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>

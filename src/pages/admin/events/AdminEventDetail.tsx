@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { Calendar, MapPin, Ticket, Users } from "lucide-react";
@@ -39,17 +39,17 @@ export default function AdminEventDetail() {
   return (
     <div className="p-4 md:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{item.event.title}</h1>
+        <h1 className="text-2xl font-bold">{item.event?.title}</h1>
         <Link to={`/admin/events/${id}/edit`} className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm">Edit Event</Link>
       </div>
       
       <div className="bg-white p-6 rounded-lg shadow-sm">
-        <p className="text-slate-600">{item.event.short_description}</p>
+        <p className="text-slate-600">{item.event?.short_description}</p>
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center gap-2"><Calendar size={16} className="text-slate-500"/> <strong>Date:</strong> {new Date(item.event.start_date).toLocaleString()}</div>
-          <div className="flex items-center gap-2"><MapPin size={16} className="text-slate-500"/> <strong>Venue:</strong> {item.event.venue_address || item.event.venue_type}</div>
+          <div className="flex items-center gap-2"><Calendar size={16} className="text-slate-500"/> <strong>Date:</strong> {new Date(item.event?.start_date).toLocaleString()}</div>
+          <div className="flex items-center gap-2"><MapPin size={16} className="text-slate-500"/> <strong>Venue:</strong> {item.event?.venue_address || item.event?.venue_type}</div>
           <div className="flex items-center gap-2"><Ticket size={16} className="text-slate-500"/> <strong>Tickets Sold:</strong> {item.tickets.reduce((acc: number, t: any) => acc + t.quantity_sold, 0)}</div>
-          <div className="flex items-center gap-2"><Users size={16} className="text-slate-500"/> <strong>Status:</strong> <span className="capitalize px-2 py-1 text-xs rounded bg-slate-100 text-slate-800">{item.event.status}</span></div>
+          <div className="flex items-center gap-2"><Users size={16} className="text-slate-500"/> <strong>Status:</strong> <span className="capitalize px-2 py-1 text-xs rounded bg-slate-100 text-slate-800">{item.event?.status}</span></div>
         </div>
       </div>
 

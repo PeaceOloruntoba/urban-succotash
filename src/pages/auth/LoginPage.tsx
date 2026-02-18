@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { useAuthStore } from "../../stores/auth";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
+      let currentRoles: string[] = [];
       const r = await api.post("/auth/login", { email, password });
       const d = r.data?.data || {};
       setTokens(d.accessToken, d.refreshToken);
@@ -32,6 +33,7 @@ export default function LoginPage() {
             role: userData.roles?.[0] || "user",
             roles: userData.roles || [],
           });
+          currentRoles = userData.roles || [];
         } catch (err) {
           // If /auth/me fails, just use the basic user data
           setUser(d.user || null);
@@ -41,9 +43,10 @@ export default function LoginPage() {
       }
       
       toast.success("Logged in successfully");
-      console.log(d)
-      const roles: string[] = d?.user?.role || [];
-      if (roles.includes("admin") || roles.includes("superadmin")) {
+      if (currentRoles.length === 0) {
+        currentRoles = d?.user?.roles ?? (d?.user?.role ? [d.user.role] : []);
+      }
+      if (currentRoles.includes("admin") || currentRoles.includes("superadmin")) {
         nav("/admin/dashboard");
       } else {
         nav("/");

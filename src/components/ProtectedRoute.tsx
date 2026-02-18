@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from "react-router";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/auth";
 import type { ReactNode } from "react";
 
