@@ -31,6 +31,7 @@ import AdminEventBookings from "./pages/admin/events/AdminEventBookings";
 import AdminPropertiesList from "./pages/admin/properties/AdminPropertiesList";
 import AdminPropertyDetail from "./pages/admin/properties/AdminPropertyDetail";
 import AdminPropertyEdit from "./pages/admin/properties/AdminPropertyEdit";
+import AdminPropertyCreate from "./pages/admin/properties/AdminPropertyCreate";
 import AdminPropertyContacts from "./pages/admin/properties/AdminPropertyContacts";
 import AdminPodcastsList from "./pages/admin/podcasts/AdminPodcastsList";
 import AdminPodcastDetail from "./pages/admin/podcasts/AdminPodcastDetail";
@@ -84,7 +85,7 @@ function AppRoutes() {
         {/* Properties */}
         <Route path="/admin/properties" element={<AdminPropertiesList />} />
         <Route path="/admin/properties/:id" element={<AdminPropertyDetail />} />
-        <Route path="/admin/properties/new" element={<AdminPropertyEdit />} />
+        <Route path="/admin/properties/new" element={<AdminPropertyCreate />} />
         <Route path="/admin/properties/:id/edit" element={<AdminPropertyEdit />} />
         <Route path="/admin/properties/:id/contacts" element={<AdminPropertyContacts />} />
         {/* Podcasts */}

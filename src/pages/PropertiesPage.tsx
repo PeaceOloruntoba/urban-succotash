@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../lib/axios";
+import { usePropertiesStore } from "../stores/properties";
 import { toast } from "sonner";
 import { Building2 } from "lucide-react";
 
@@ -59,8 +59,9 @@ export default function PropertiesPage() {
       if (filters.sortBy) params.sortBy = filters.sortBy;
       if (filters.sortDir) params.sortDir = filters.sortDir;
 
-      const res = await api.get("/properties", { params });
-      setProperties(res.data?.data?.items || []);
+      const fetchProperties = usePropertiesStore.getState().fetchProperties;
+      await fetchProperties(params);
+      setProperties(usePropertiesStore.getState().properties.map((p: any) => ({ ...p, created_at: p.created_at || "" })) || []);
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to load properties");
     } finally {

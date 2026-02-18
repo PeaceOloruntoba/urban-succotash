@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "../../../lib/axios";
+import { usePropertiesStore } from "../../../stores/properties";
 import Spinner from "../../../components/Spinner";
 import { MapPin, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,8 +14,9 @@ export default function AdminPropertiesList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get("/properties/admin/list");
-        setItems(res.data?.data?.items || []);
+        const fetchAdminList = usePropertiesStore.getState().fetchAdminList;
+        await fetchAdminList();
+        setItems(usePropertiesStore.getState().adminList || []);
       } catch (err: any) {
         setError(err?.response?.data?.message || "Failed to load properties");
       } finally {
@@ -27,8 +28,9 @@ export default function AdminPropertiesList() {
     if (!confirm("Delete this property?")) return;
     try {
       setDeletingId(id);
-      await api.delete(`/properties/${id}`);
-      setItems((prev) => prev.filter((p) => p.id !== id));
+      const deleteProperty = usePropertiesStore.getState().deleteProperty;
+      await deleteProperty(id);
+      setItems(usePropertiesStore.getState().adminList || []);
     } catch (err: any) {
       alert(err?.response?.data?.message || "Failed to delete property");
     } finally {

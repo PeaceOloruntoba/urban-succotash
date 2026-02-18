@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { api } from "../lib/axios";
+import { usePropertiesStore } from "../stores/properties";
 import { toast } from "sonner";
 import { Building2, ChevronLeft, ChevronRight, X } from "lucide-react";
 // import { useAuthStore } from "../stores/auth";
@@ -62,11 +62,13 @@ export default function PropertyDetailPage() {
   const loadProperty = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`/properties/${id}`);
-      setProperty(res.data?.data?.item || null);
-      setImages(res.data?.data?.images || []);
-      setFeatures(res.data?.data?.features || []);
-      const primaryIdx = (res.data?.data?.images || []).findIndex((img: PropertyImage) => img.is_primary);
+      const fetchPropertyDetail = usePropertiesStore.getState().fetchPropertyDetail;
+      await fetchPropertyDetail(id!);
+      const st = usePropertiesStore.getState();
+      setProperty((st.propertyDetail as any) || null);
+      setImages(st.propertyImages as any || []);
+      setFeatures(st.propertyFeatures as any || []);
+      const primaryIdx = (st.propertyImages || []).findIndex((img: PropertyImage) => img.is_primary);
       setActiveIndex(primaryIdx >= 0 ? primaryIdx : 0);
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to load property");
@@ -79,7 +81,8 @@ export default function PropertyDetailPage() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post(`/properties/${id}/inquiry`, inquiryForm);
+      const submitInquiry = usePropertiesStore.getState().submitInquiry;
+      await submitInquiry(id!, inquiryForm);
       toast.success("Inquiry submitted successfully!");
       setInquiryForm({ name: "", email: "", phone: "", message: "" });
     } catch (err: any) {

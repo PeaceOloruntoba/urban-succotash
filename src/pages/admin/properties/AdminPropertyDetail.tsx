@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { api } from "../../../lib/axios";
+import { usePropertiesStore } from "../../../stores/properties";
 import Spinner from "../../../components/Spinner";
 import { Building2, MapPin, DollarSign, Bed, Bath, Trash2, Star, Upload } from "lucide-react";
 
@@ -22,8 +22,9 @@ export default function AdminPropertyDetail() {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get(`/properties/${id}`);
-        setItem(res.data?.data?.item || null);
+        const fetchPropertyDetail = usePropertiesStore.getState().fetchPropertyDetail;
+        await fetchPropertyDetail(id);
+        setItem(usePropertiesStore.getState().propertyDetail || null);
       } catch (err: any) {
         setError(err?.response?.data?.message || "Failed to load property details");
       } finally {
@@ -38,8 +39,9 @@ export default function AdminPropertyDetail() {
       setImgLoading(true);
       setImgError(null);
       try {
-        const res = await api.get(`/properties/${id}/images`);
-        setImages(res.data?.data?.images || []);
+        const fetchPropertyImages = usePropertiesStore.getState().fetchPropertyImages;
+        await fetchPropertyImages(id);
+        setImages(usePropertiesStore.getState().propertyImages || []);
       } catch (err: any) {
         setImgError(err?.response?.data?.message || "Failed to load images");
       } finally {
@@ -58,13 +60,9 @@ export default function AdminPropertyDetail() {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      await api.post(`/properties/${id}/images`, {
-        imageBase64: b64,
-        isPrimary,
-        displayOrder,
-      });
-      const res = await api.get(`/properties/${id}/images`);
-      setImages(res.data?.data?.images || []);
+      const uploadPropertyImage = usePropertiesStore.getState().uploadPropertyImage;
+      await uploadPropertyImage(id, { imageBase64: b64, isPrimary, displayOrder });
+      setImages(usePropertiesStore.getState().propertyImages || []);
       setFile(null);
       setIsPrimary(false);
       setDisplayOrder(0);
@@ -79,13 +77,9 @@ export default function AdminPropertyDetail() {
     if (!id) return;
     try {
       setImgLoading(true);
-      await api.post(`/properties/${id}/images`, {
-        imageUrl: image.image_url,
-        isPrimary: true,
-        displayOrder: 0,
-      });
-      const res = await api.get(`/properties/${id}/images`);
-      setImages(res.data?.data?.images || []);
+      const setPrimaryImage = usePropertiesStore.getState().setPrimaryImage;
+      await setPrimaryImage(id, image.image_url);
+      setImages(usePropertiesStore.getState().propertyImages || []);
     } catch (err: any) {
       setImgError(err?.response?.data?.message || "Failed to set primary image");
     } finally {
@@ -98,8 +92,9 @@ export default function AdminPropertyDetail() {
     if (!confirm("Delete this image?")) return;
     try {
       setImgLoading(true);
-      await api.delete(`/properties/${id}/images/${imageId}`);
-      setImages((prev) => prev.filter((img) => img.id !== imageId));
+      const deletePropertyImage = usePropertiesStore.getState().deletePropertyImage;
+      await deletePropertyImage(id, imageId);
+      setImages(usePropertiesStore.getState().propertyImages || []);
     } catch (err: any) {
       setImgError(err?.response?.data?.message || "Failed to delete image");
     } finally {

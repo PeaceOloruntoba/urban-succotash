@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api } from "../../../lib/axios";
+import { usePropertiesStore } from "../../../stores/properties";
 import Spinner from "../../../components/Spinner";
 
 export default function AdminPropertyContacts() {
@@ -15,8 +15,9 @@ export default function AdminPropertyContacts() {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get(`/properties/${id}/contacts`);
-        setContacts(res.data?.data?.contacts || []);
+        const fetchPropertyContacts = usePropertiesStore.getState().fetchPropertyContacts;
+        await fetchPropertyContacts(id);
+        setContacts(usePropertiesStore.getState().propertyContacts || []);
       } catch (err: any) {
         setError(err?.response?.data?.message || "Failed to load contacts");
       } finally {
