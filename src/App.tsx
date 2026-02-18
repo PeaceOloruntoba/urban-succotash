@@ -13,9 +13,9 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 // import UnifiedDashboard from "./pages/admin/UnifiedDashboard";
 // import EventManagement from "./pages/admin/EventManagement";
-import LiveListenerPage from "./pages/LiveListenerPage";
+// import LiveListenerPage from "./pages/LiveListenerPage";
 // import LiveStudio from "./pages/admin/LiveStudio";
-import LivePage from "./pages/LivePage";
+// import LivePage from "./pages/LivePage";
 import PropertiesPage from "./pages/PropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
 import EventsPage from "./pages/EventsPage";
@@ -36,9 +36,9 @@ import AdminPropertyContacts from "./pages/admin/properties/AdminPropertyContact
 import AdminPodcastsList from "./pages/admin/podcasts/AdminPodcastsList";
 import AdminPodcastDetail from "./pages/admin/podcasts/AdminPodcastDetail";
 import AdminPodcastEdit from "./pages/admin/podcasts/AdminPodcastEdit";
-import AdminLiveList from "./pages/admin/live/AdminLiveList";
-import AdminLiveDetail from "./pages/admin/live/AdminLiveDetail";
-import AdminLiveEdit from "./pages/admin/live/AdminLiveEdit";
+// import AdminLiveList from "./pages/admin/live/AdminLiveList";
+// import AdminLiveDetail from "./pages/admin/live/AdminLiveDetail";
+// import AdminLiveEdit from "./pages/admin/live/AdminLiveEdit";
 
 function AppRoutes() {
   const { loadFromStorage } = useAuthStore();
@@ -59,8 +59,9 @@ function AppRoutes() {
         <Route path="/events/:id" element={<EventDetailPage />} />
         <Route path="/podcasts" element={<PodcastListPage />} />
         <Route path="/podcasts/:id" element={<PodcastDetailPage />} />
-        <Route path="/live" element={<LivePage />} />
-        <Route path="/live/listen" element={<LiveListenerPage />} />
+        {/* Live temporarily disabled */}
+        {/* <Route path="/live" element={<LivePage />} /> */}
+        {/* <Route path="/live/listen" element={<LiveListenerPage />} /> */}
         <Route path="/about" element={<AboutPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -92,10 +93,10 @@ function AppRoutes() {
         <Route path="/admin/podcasts" element={<AdminPodcastsList />} />
         <Route path="/admin/podcasts/:id" element={<AdminPodcastDetail />} />
         <Route path="/admin/podcasts/:id/edit" element={<AdminPodcastEdit />} />
-        {/* Live */}
-        <Route path="/admin/live" element={<AdminLiveList />} />
-        <Route path="/admin/live/:id" element={<AdminLiveDetail />} />
-        <Route path="/admin/live/:id/edit" element={<AdminLiveEdit />} />
+        {/* Live admin temporarily disabled */}
+        {/* <Route path="/admin/live" element={<AdminLiveList />} /> */}
+        {/* <Route path="/admin/live/:id" element={<AdminLiveDetail />} /> */}
+        {/* <Route path="/admin/live/:id/edit" element={<AdminLiveEdit />} /> */}
       </Route>
     </Routes>
   );

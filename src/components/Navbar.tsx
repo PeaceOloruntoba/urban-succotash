@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth";
 import { useState } from "react";
-import { Menu, X, Home, Building2, Calendar, Mic2, FileText } from "lucide-react";
+import { Menu, X, Home, Building2, Calendar, FileText } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuthStore();
@@ -16,7 +16,6 @@ export default function Navbar() {
       <Link to="/properties" className="flex items-center gap-2 text-slate-700 hover:text-blue-800 transition-colors"><Building2 size={16}/> Properties</Link>
       <Link to="/events" className="flex items-center gap-2 text-slate-700 hover:text-blue-800 transition-colors"><Calendar size={16}/> Events</Link>
       <Link to="/podcasts" className="flex items-center gap-2 text-slate-700 hover:text-blue-800 transition-colors"><FileText size={16}/> Podcasts</Link>
-      <Link to="/live" className="flex items-center gap-2 text-slate-700 hover:text-blue-800 transition-colors"><Mic2 size={16}/> Live</Link>
       {user ? (
         <>
           {isAdmin && (

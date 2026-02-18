@@ -2,13 +2,10 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Mic2,
-  Radio,
   Play,
   Building2,
-  ChevronRight,
   Globe,
   Calendar,
-  Heart,
   MapPin,
   ArrowRight,
   Clock,
@@ -38,13 +35,14 @@ export default function LandingPage() {
       {/* 1. HERO SECTION */}
       <section className="max-w-7xl mx-auto px-4 py-12 md:py-24 grid md:grid-cols-2 items-center gap-12">
         <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+          {/* Live badge temporarily disabled */}
+          {/* <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
             </span>
             Live Now: 1,240 people listening
-          </div>
+          </div> */}
           <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.1] text-slate-900">
             Your Gateway to{" "}
             <span className="text-blue-800">Real Estate Excellence</span>
@@ -119,10 +117,11 @@ export default function LandingPage() {
                 <div className="text-3xl font-extrabold text-blue-900">10k+</div>
                 <div className="text-sm text-slate-600">Active Users</div>
               </div>
-              <div>
+              {/* Live stat temporarily disabled */}
+              {/* <div>
                 <div className="text-3xl font-extrabold text-blue-900">50+</div>
                 <div className="text-sm text-slate-600">Live Sessions</div>
-              </div>
+              </div> */}
               <div>
                 <div className="text-3xl font-extrabold text-blue-900">100%</div>
                 <div className="text-sm text-slate-600">Verified Listings</div>
@@ -143,10 +142,11 @@ export default function LandingPage() {
             <div className="text-3xl font-bold text-blue-900">10k+</div>
             <div className="text-sm text-slate-600">Active Users</div>
           </div>
-          <div>
+          {/* Live stat temporarily disabled */}
+          {/* <div>
             <div className="text-3xl font-bold text-blue-900">50+</div>
             <div className="text-sm text-slate-600">Live Sessions</div>
-          </div>
+          </div> */}
           <div>
             <div className="text-3xl font-bold text-blue-900">100%</div>
             <div className="text-sm text-slate-600">Verified Listings</div>
@@ -454,98 +454,6 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
-      </section>
-
-      {/* 5. LIVE & UPCOMING */}
-      <section className="py-20 bg-slate-900 text-white overflow-hidden relative">
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <h2 className="text-3xl font-bold italic">ON AIR NOW</h2>
-              <p className="text-slate-400 mt-2">
-                Join the conversation with industry leaders.
-              </p>
-            </div>
-            <Link
-              to="/live"
-              className="hidden md:flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold"
-            >
-              View Schedule <ChevronRight size={20} />
-            </Link>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-red-500 mb-6">
-                  <Radio size={20} className="animate-pulse" />
-                  <span className="text-sm font-black uppercase tracking-widest">
-                    Live Now
-                  </span>
-                </div>
-                <h3 className="text-3xl font-bold mb-4">
-                  Market Outlook 2026: Commercial vs Residential
-                </h3>
-                <p className="text-slate-400 mb-8">
-                  with Industry Experts & Special Guests
-                </p>
-              </div>
-              <div className="flex items-center gap-6">
-                <Link
-                  to="/live"
-                  className="px-6 py-3 bg-blue-600 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-500 transition-colors"
-                >
-                  Join Stream
-                </Link>
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-10 h-10 rounded-full bg-blue-600 border-2 border-slate-800 flex items-center justify-center text-xs font-bold"
-                    >
-                      {i}
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full bg-slate-700 border-2 border-slate-800 flex items-center justify-center text-xs font-bold">
-                    +2k
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {[
-                {
-                  title: "Sustainable Urban Development",
-                  time: "Today 5:00 PM",
-                  host: "Dev Group",
-                },
-                {
-                  title: "Fix & Flip: ROI Mastery",
-                  time: "Tomorrow 10:00 AM",
-                  host: "Expert Investors",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="text-blue-400 text-xs font-bold mb-1 flex items-center gap-2">
-                      <Calendar size={14} /> {item.time}
-                    </div>
-                    <h4 className="font-bold text-lg">{item.title}</h4>
-                    <p className="text-slate-400 text-sm">Host: {item.host}</p>
-                  </div>
-                  <button className="p-3 text-slate-400 hover:text-white transition-colors">
-                    <Heart size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-600/10 blur-[120px] -z-0"></div>
       </section>
 
       {/* 6. FINAL CTA SECTION */}
