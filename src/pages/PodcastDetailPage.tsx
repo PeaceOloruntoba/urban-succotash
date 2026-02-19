@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
 import AudioPlayer from "../components/AudioPlayer";
+import VideoPlayer from "../components/VideoPlayer";
 import { useAuthStore } from "../stores/auth";
 
 type Comment = {
@@ -34,6 +35,7 @@ export default function PodcastDetailPage() {
     likes: 0,
     saves: 0,
   });
+  const [sourceType, setSourceType] = useState<"audio" | "video">("audio");
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentReplies, setCommentReplies] = useState<Record<number, CommentReply[]>>({});
   const [newComment, setNewComment] = useState("");
@@ -61,6 +63,9 @@ export default function PodcastDetailPage() {
       ]);
       setPodcast(podcastRes.data?.data?.item);
       setSourceUrl(sourceRes.data?.data?.sourceUrl || "");
+      setSourceType(
+        sourceRes.data?.data?.type === "video" ? "video" : "audio"
+      );
       setStats(statsRes.data?.data?.stats || { streams: 0, likes: 0, saves: 0 });
     } catch (err: any) {
       toast.error("Failed to load podcast");
@@ -231,7 +236,20 @@ export default function PodcastDetailPage() {
 
               {sourceUrl && (
                 <div className="mb-6">
-                  <AudioPlayer src={sourceUrl} onPlay={() => logStream()} onEnded={(d) => logStream(d)} />
+                  {sourceType === "video" ? (
+                    <VideoPlayer
+                      src={sourceUrl}
+                      poster={podcast?.cover_url || undefined}
+                      onPlay={() => logStream()}
+                      onEnded={(d) => logStream(d)}
+                    />
+                  ) : (
+                    <AudioPlayer
+                      src={sourceUrl}
+                      onPlay={() => logStream()}
+                      onEnded={(d) => logStream(d)}
+                    />
+                  )}
                 </div>
               )}
 

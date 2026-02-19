@@ -36,6 +36,7 @@ import AdminPropertyContacts from "./pages/admin/properties/AdminPropertyContact
 import AdminPodcastsList from "./pages/admin/podcasts/AdminPodcastsList";
 import AdminPodcastDetail from "./pages/admin/podcasts/AdminPodcastDetail";
 import AdminPodcastEdit from "./pages/admin/podcasts/AdminPodcastEdit";
+import AdminPodcastCreate from "./pages/admin/podcasts/AdminPodcastCreate";
 // import AdminLiveList from "./pages/admin/live/AdminLiveList";
 // import AdminLiveDetail from "./pages/admin/live/AdminLiveDetail";
 // import AdminLiveEdit from "./pages/admin/live/AdminLiveEdit";
@@ -92,6 +93,7 @@ function AppRoutes() {
         {/* Podcasts */}
         <Route path="/admin/podcasts" element={<AdminPodcastsList />} />
         <Route path="/admin/podcasts/:id" element={<AdminPodcastDetail />} />
+        <Route path="/admin/podcasts/new" element={<AdminPodcastCreate />} />
         <Route path="/admin/podcasts/:id/edit" element={<AdminPodcastEdit />} />
         {/* Live admin temporarily disabled */}
         {/* <Route path="/admin/live" element={<AdminLiveList />} /> */}

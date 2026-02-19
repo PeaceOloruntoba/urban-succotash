@@ -1,39 +1,35 @@
 import { useEffect, useState } from "react";
-import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { usePodcastsStore } from "../../../stores/podcasts";
 
 export default function AdminPodcastsList() {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { adminPodcasts, fetchAdminPodcasts, loading, error } = usePodcastsStore();
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "scheduled" | "published">("all");
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await api.get("/podcasts/admin", { params: { status: "all" } });
-        setItems(res.data?.data?.items || []);
-      } catch (err: any) {
-        setError(err?.response?.data?.message || "Failed to load podcasts");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    fetchAdminPodcasts({ status: statusFilter });
+  }, [statusFilter, fetchAdminPodcasts]);
   return (
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Podcasts</h1>
         <Link to="/admin/podcasts/new" className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm">Create Podcast</Link>
       </div>
+      <div className="mb-3">
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
+          <option value="all">All</option>
+          <option value="draft">Draft</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="published">Published</option>
+        </select>
+      </div>
 
       {loading ? (
         <div className="flex items-center gap-2 text-slate-600"><Spinner size={18}/> Loading podcasts...</div>
       ) : error ? (
         <div className="text-red-600 text-sm">{error}</div>
-      ) : items.length === 0 ? (
+      ) : adminPodcasts.length === 0 ? (
         <div className="rounded border bg-white p-6 text-center text-slate-600">No podcasts yet.</div>
       ) : (
         <div className="overflow-x-auto bg-white rounded border">
@@ -46,7 +42,7 @@ export default function AdminPodcastsList() {
               </tr>
             </thead>
             <tbody>
-              {items.map((p) => (
+              {adminPodcasts.map((p) => (
                 <tr key={p.id} className="border-t hover:bg-slate-50">
                   <td className="py-3 px-4 flex items-center gap-2"><FileText size={14}/> <span className="font-medium">{p.title}</span></td>
                   <td className="py-3 px-4 capitalize">
