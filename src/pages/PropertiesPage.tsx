@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { usePropertiesStore } from "../stores/properties";
 import { toast } from "sonner";
-import { Building2 } from "lucide-react";
+import { Building2, SearchX } from "lucide-react";
 
 type Property = {
   id: string;
@@ -74,6 +74,21 @@ export default function PropertiesPage() {
   };
 
   const applyFilters = () => {
+    loadProperties();
+  };
+  const clearFilters = () => {
+    setFilters({
+      propertyType: "",
+      listingType: "",
+      city: "",
+      state: "",
+      minPrice: "",
+      maxPrice: "",
+      bedrooms: "",
+      search: "",
+      sortBy: "created_at",
+      sortDir: "desc",
+    });
     loadProperties();
   };
 
@@ -190,8 +205,30 @@ export default function PropertiesPage() {
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-800"></div>
           </div>
         ) : properties.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-slate-600">No properties found</p>
+          <div className="py-16 flex items-center justify-center">
+            <div className="max-w-xl w-full text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-800 mx-auto">
+                <SearchX size={28} />
+              </div>
+              <h2 className="mt-6 text-2xl font-bold text-slate-900">No properties found</h2>
+              <p className="mt-2 text-slate-600">
+                Try adjusting your filters or explore all properties. If you need something specific, reach out.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <button onClick={clearFilters} className="btn btn-primary">
+                  Clear Filters
+                </button>
+                <Link to="/properties" className="px-5 py-3 bg-slate-100 text-slate-800 rounded-lg font-semibold hover:bg-slate-200">
+                  Explore All
+                </Link>
+                <a
+                  href="mailto:support@safenest.app?subject=Property%20Request"
+                  className="px-5 py-3 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900"
+                >
+                  Request A Property
+                </a>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -3,6 +3,7 @@ import { api } from "../lib/axios";
 import { Link } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { toast } from "sonner";
+import { SearchX } from "lucide-react";
 
 export default function PodcastListPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -34,6 +35,29 @@ export default function PodcastListPage() {
       </div>
       {loading ? (
         <div className="py-6"><Spinner /></div>
+      ) : items.length === 0 ? (
+        <div className="py-16 flex items-center justify-center">
+          <div className="max-w-xl w-full text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-800 mx-auto">
+              <SearchX size={28} />
+            </div>
+            <h2 className="mt-6 text-2xl font-bold text-slate-900">No podcasts found</h2>
+            <p className="mt-2 text-slate-600">
+              Check back soon or explore all podcasts. You can also suggest topics you’d love to hear.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3 justify-center">
+              <Link to="/podcasts" className="px-5 py-3 bg-slate-100 text-slate-800 rounded-lg font-semibold hover:bg-slate-200">
+                Explore All
+              </Link>
+              <a
+                href="mailto:support@safenest.app?subject=Podcast%20Suggestion"
+                className="px-5 py-3 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900"
+              >
+                Suggest A Topic
+              </a>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((p) => (

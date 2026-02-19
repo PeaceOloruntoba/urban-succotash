@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Spinner from "../../../components/Spinner";
-import { FileText } from "lucide-react";
+import { FileText, Eye, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePodcastsStore } from "../../../stores/podcasts";
 
@@ -30,28 +30,64 @@ export default function AdminPodcastsList() {
       ) : error ? (
         <div className="text-red-600 text-sm">{error}</div>
       ) : adminPodcasts.length === 0 ? (
-        <div className="rounded border bg-white p-6 text-center text-slate-600">No podcasts yet.</div>
+        <div className="py-16 flex items-center justify-center">
+          <div className="max-w-xl w-full text-center bg-white rounded-2xl border p-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-800 mx-auto">
+              <FileText size={28} />
+            </div>
+            <h2 className="mt-6 text-2xl font-bold text-slate-900">No podcasts yet</h2>
+            <p className="mt-2 text-slate-600">
+              Create your first podcast episode. You can set schedule and cover image on the edit screen.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3 justify-center">
+              <Link to="/admin/podcasts/new" className="px-5 py-3 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900">
+                Create Podcast
+              </Link>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="overflow-x-auto bg-white rounded border">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 text-slate-700">
-                <th className="text-left py-3 px-4">Title</th>
-                <th className="text-left py-3 px-4">Status</th>
-                <th className="text-left py-3 px-4">Actions</th>
+                <th className="text-left py-3 px-4 w-[60%]">Title</th>
+                <th className="text-left py-3 px-4 w-[20%]">Status</th>
+                <th className="text-left py-3 px-4 w-[20%]">Actions</th>
               </tr>
             </thead>
             <tbody>
               {adminPodcasts.map((p) => (
                 <tr key={p.id} className="border-t hover:bg-slate-50">
-                  <td className="py-3 px-4 flex items-center gap-2"><FileText size={14}/> <span className="font-medium">{p.title}</span></td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      <FileText size={14} className="text-slate-500" />
+                      <span className="font-medium line-clamp-1">{p.title}</span>
+                    </div>
+                  </td>
                   <td className="py-3 px-4 capitalize">
-                    <span className="px-2 py-1 text-xs rounded bg-slate-100 text-slate-800">{p.status}</span>
+                    <span className={`px-2 py-1 text-xs rounded ${
+                      (p.status || '').toLowerCase() === 'published' ? 'bg-green-100 text-green-700' :
+                      (p.status || '').toLowerCase() === 'scheduled' ? 'bg-blue-100 text-blue-700' :
+                      'bg-slate-100 text-slate-700'
+                    }`}>{p.status}</span>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <Link to={`/admin/podcasts/${p.id}`} className="px-2 py-1 rounded border hover:bg-slate-50">View</Link>
-                      <Link to={`/admin/podcasts/${p.id}/edit`} className="px-2 py-1 rounded border hover:bg-slate-50">Edit</Link>
+                      <Link
+                        to={`/admin/podcasts/${p.id}`}
+                        title="View"
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100"
+                      >
+                        <Eye size={16} />
+                      </Link>
+                      <Link
+                        to={`/admin/podcasts/${p.id}/edit`}
+                        title="Edit"
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-50 text-amber-700 hover:bg-amber-100"
+                      >
+                        <Pencil size={16} />
+                      </Link>
                     </div>
                   </td>
                 </tr>

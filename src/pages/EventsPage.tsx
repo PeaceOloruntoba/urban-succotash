@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { SearchX } from "lucide-react";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
 
@@ -67,8 +68,27 @@ export default function EventsPage() {
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-800"></div>
           </div>
         ) : events.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-slate-600">No events found</p>
+          <div className="py-16 flex items-center justify-center">
+            <div className="max-w-xl w-full text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-800 mx-auto">
+                <SearchX size={28} />
+              </div>
+              <h2 className="mt-6 text-2xl font-bold text-slate-900">No events found</h2>
+              <p className="mt-2 text-slate-600">
+                Try checking back later or explore all events. You can also suggest an event you’d like to see.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <Link to="/events" className="px-5 py-3 bg-slate-100 text-slate-800 rounded-lg font-semibold hover:bg-slate-200">
+                  Explore All
+                </Link>
+                <a
+                  href="mailto:support@safenest.app?subject=Event%20Suggestion"
+                  className="px-5 py-3 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900"
+                >
+                  Suggest An Event
+                </a>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
