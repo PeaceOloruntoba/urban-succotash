@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/axios";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import {
   Lock,
 } from "lucide-react";
 import ShareButton from "../components/ShareButton";
+import { useEventsStore } from "../stores/events";
 
 type Event = {
   id: string;
@@ -92,6 +93,18 @@ const getSocialIcon = (platform: string) => {
 export default function EventDetailPage() {
   const { id } = useParams();
   const { user } = useAuthStore();
+  const { fetchExchangeRates, convertAmount } = useEventsStore();
+  const guessCurrency = useMemo(() => {
+    const lang = navigator.language || "en-US";
+    if (lang.includes("NG")) return "NGN";
+    if (lang.includes("US")) return "USD";
+    if (lang.includes("GB")) return "GBP";
+    if (lang.includes("ZA")) return "ZAR";
+    if (lang.includes("GH")) return "GHS";
+    if (lang.includes("DE") || lang.includes("FR") || lang.includes("ES") || lang.includes("IT") || lang.includes("EU")) return "EUR";
+    return "USD";
+  }, []);
+  const [displayCurrency, setDisplayCurrency] = useState<string>(guessCurrency);
   const [event, setEvent] = useState<Event | null>(null);
   const [images, setImages] = useState<EventImage[]>([]);
   const [speakers, setSpeakers] = useState<EventSpeaker[]>([]);
@@ -117,6 +130,12 @@ export default function EventDetailPage() {
       loadEvent();
     }
   }, [id]);
+
+  useEffect(() => {
+    (async () => {
+      await fetchExchangeRates("NGN");
+    })();
+  }, [fetchExchangeRates]);
 
   const loadEvent = async () => {
     try {
@@ -579,6 +598,18 @@ export default function EventDetailPage() {
                                   {ticket.quantity_available - ticket.quantity_sold} left
                                 </div>
                               )}
+                              {!ticket.is_free && (
+                                <div className="text-xs text-slate-500 mt-1">
+                                  {(() => {
+                                    const amt = Number(ticket.price);
+                                    const from = ticket.currency || "NGN";
+                                    // @ts-ignore convertAmount injected via store hook
+                                    const converted = convertAmount ? convertAmount(amt, from, displayCurrency) : null;
+                                    if (converted === null) return `≈ ${displayCurrency} ...`;
+                                    return `≈ ${new Intl.NumberFormat(undefined, { style: "currency", currency: displayCurrency }).format(converted)} (${displayCurrency})`;
+                                  })()}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </button>
@@ -668,6 +699,24 @@ export default function EventDetailPage() {
 
                       {/* Total */}
                       {!selectedTicket.is_free && (
+                        <div className="pt-2">
+                          <label className="text-sm text-slate-600">Display currency:</label>
+                          <select
+                            value={displayCurrency}
+                            onChange={(e) => setDisplayCurrency(e.target.value)}
+                            className="ml-2 border rounded px-2 py-1 text-sm"
+                          >
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="NGN">NGN</option>
+                            <option value="ZAR">ZAR</option>
+                            <option value="GHS">GHS</option>
+                          </select>
+                        </div>
+                      )}
+ 
+                      {!selectedTicket.is_free && (
                         <div className="pt-4 border-t border-slate-200 space-y-2">
                           <div className="flex justify-between text-slate-600">
                             <span>Subtotal:</span>
@@ -684,6 +733,16 @@ export default function EventDetailPage() {
                             <span className="text-blue-800">
                               {formatPrice(totalAmount, selectedTicket.currency)}
                             </span>
+                          </div>
+                          <div className="text-right text-xs text-slate-500">
+                            {(() => {
+                              const amt = Number(totalAmount);
+                              const from = selectedTicket.currency || "NGN";
+                              // @ts-ignore convertAmount injected via store hook
+                              const converted = convertAmount ? convertAmount(amt, from, displayCurrency) : null;
+                              if (converted === null) return `≈ ${displayCurrency} ...`;
+                              return `≈ ${new Intl.NumberFormat(undefined, { style: "currency", currency: displayCurrency }).format(converted)} (${displayCurrency})`;
+                            })()}
                           </div>
                         </div>
                       )}

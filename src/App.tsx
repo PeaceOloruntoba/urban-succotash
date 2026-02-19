@@ -20,6 +20,7 @@ import PropertiesPage from "./pages/PropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
 import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
+import PaymentCallbackPage from "./pages/PaymentCallbackPage";
 import AboutPage from "./pages/AboutPage";
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -28,6 +29,12 @@ import AdminEventsList from "./pages/admin/events/AdminEventsList";
 import AdminEventDetail from "./pages/admin/events/AdminEventDetail";
 import AdminEventEdit from "./pages/admin/events/AdminEventEdit";
 import AdminEventBookings from "./pages/admin/events/AdminEventBookings";
+import AdminEventCreate from "./pages/admin/events/AdminEventCreate";
+import AdminEventTickets from "./pages/admin/events/AdminEventTickets";
+import AdminEventTicketEdit from "./pages/admin/events/AdminEventTicketEdit";
+import AdminEventSpeakers from "./pages/admin/events/AdminEventSpeakers";
+import AdminEventCouponCreate from "./pages/admin/events/AdminEventCouponCreate";
+import AdminEventImages from "./pages/admin/events/AdminEventImages";
 import AdminPropertiesList from "./pages/admin/properties/AdminPropertiesList";
 import AdminPropertyDetail from "./pages/admin/properties/AdminPropertyDetail";
 import AdminPropertyEdit from "./pages/admin/properties/AdminPropertyEdit";
@@ -58,6 +65,7 @@ function AppRoutes() {
         <Route path="/properties/:id" element={<PropertyDetailPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:id" element={<EventDetailPage />} />
+        <Route path="/events/:id/payment/callback" element={<PaymentCallbackPage />} />
         <Route path="/podcasts" element={<PodcastListPage />} />
         <Route path="/podcasts/:id" element={<PodcastDetailPage />} />
         {/* Live temporarily disabled */}
@@ -82,8 +90,15 @@ function AppRoutes() {
         {/* Events */}
         <Route path="/admin/events" element={<AdminEventsList />} />
         <Route path="/admin/events/:id" element={<AdminEventDetail />} />
+        <Route path="/admin/events/new" element={<AdminEventCreate />} />
         <Route path="/admin/events/:id/edit" element={<AdminEventEdit />} />
         <Route path="/admin/events/:id/bookings" element={<AdminEventBookings />} />
+        <Route path="/admin/events/:id/tickets" element={<AdminEventTickets />} />
+        <Route path="/admin/events/:id/tickets/:ticketId/edit" element={<AdminEventTicketEdit />} />
+        <Route path="/admin/events/:id/tickets/new" element={<AdminEventTicketEdit />} />
+        <Route path="/admin/events/:id/speakers" element={<AdminEventSpeakers />} />
+        <Route path="/admin/events/:id/coupons/new" element={<AdminEventCouponCreate />} />
+        <Route path="/admin/events/:id/images" element={<AdminEventImages />} />
         {/* Properties */}
         <Route path="/admin/properties" element={<AdminPropertiesList />} />
         <Route path="/admin/properties/:id" element={<AdminPropertyDetail />} />

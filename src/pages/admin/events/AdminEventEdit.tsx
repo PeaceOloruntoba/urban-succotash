@@ -1,50 +1,72 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { toast } from "sonner";
+import { useEventsStore } from "../../../stores/events";
+import { api } from "../../../lib/axios";
 
-const Input = (props: any) => <input className="w-full border rounded px-3 py-2" {...props} />;
-const Textarea = (props: any) => <textarea className="w-full border rounded px-3 py-2" {...props} />;
-const Select = (props: any) => <select className="w-full border rounded px-3 py-2" {...props} />;
+const Input = (props: any) => <input className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 shadow-sm focus:ring-2 focus:ring-blue-800 focus:border-transparent" {...props} />;
+const Textarea = (props: any) => <textarea className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 shadow-sm focus:ring-2 focus:ring-blue-800 focus:border-transparent" {...props} />;
+const Select = (props: any) => <select className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 shadow-sm focus:ring-2 focus:ring-blue-800 focus:border-transparent" {...props} />;
 
 export default function AdminEventEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentEventDetails, fetchAdminEventById, updateEvent, loading } = useEventsStore();
   const [form, setForm] = useState<any>({});
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id || id === 'new') {
-      setLoading(false);
       return;
     }
     (async () => {
-      setLoading(true);
       setError(null);
       try {
-        const res = await api.get(`/events/${id}`);
-        setForm(res.data?.data?.event || {});
+        const details = await fetchAdminEventById(id);
+        setForm(details?.event || {});
       } catch (err: any) {
         setError(err?.response?.data?.message || "Failed to load event");
-      } finally {
-        setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, fetchAdminEventById]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] || null;
+    setCoverFile(f);
+    setCoverPreview(f ? URL.createObjectURL(f) : null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const promise = id === 'new' ? api.post('/events', form) : api.patch(`/events/${id}`, form);
-      await promise;
+      const payload: any = { ...form };
+      if (payload.start_date) payload.startDate = new Date(payload.start_date).toISOString();
+      if (payload.end_date) payload.endDate = new Date(payload.end_date).toISOString();
+      if (coverFile) {
+        const sigRes = await api.post("/podcasts/upload/signature", { resourceType: "image", folder: "events/covers" });
+        const { cloudName, apiKey, timestamp, signature } = sigRes.data?.data || sigRes.data;
+        const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+        const formData = new FormData();
+        formData.set("file", coverFile);
+        formData.set("api_key", apiKey);
+        formData.set("timestamp", String(timestamp));
+        formData.set("signature", signature);
+        formData.set("folder", "events/covers");
+        const res = await fetch(endpoint, { method: "POST", body: formData });
+        if (!res.ok) throw new Error(`Cloudinary upload failed: ${res.statusText}`);
+        const json = await res.json();
+        payload.coverImageUrl = json.secure_url || json.url;
+      }
+      await updateEvent(id!, payload);
       toast.success(`Event ${id === 'new' ? 'created' : 'updated'} successfully`);
       navigate(`/admin/events`);
     } catch (err: any) {
@@ -77,6 +99,13 @@ export default function AdminEventEdit() {
         </div>
         <div><label className="block text-sm font-medium mb-1">Venue Address</label><Input name="venue_address" value={form.venue_address || ''} onChange={handleChange} /></div>
         <div><label className="block text-sm font-medium mb-1">Online Link</label><Input name="online_link" value={form.online_link || ''} onChange={handleChange} /></div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Cover Image</label>
+          <input type="file" accept="image/*" onChange={handleCoverChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 shadow-sm focus:ring-2 focus:ring-blue-800 focus:border-transparent" />
+          {(coverPreview || currentEventDetails?.event?.cover_image_url) && (
+            <img src={coverPreview || currentEventDetails?.event?.cover_image_url} alt="cover" className="mt-2 w-full max-h-48 object-cover rounded" />
+          )}
+        </div>
         <div className="flex justify-end">
           <button type="submit" disabled={saving} className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2">
             {saving && <Spinner size={16} />} {saving ? 'Saving...' : 'Save Event'}

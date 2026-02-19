@@ -1,28 +1,16 @@
 import { useEffect, useState } from "react";
-import { api } from "../../../lib/axios";
 import Spinner from "../../../components/Spinner";
 import { Calendar, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEventsStore } from "../../../stores/events";
 
 export default function AdminEventsList() {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { adminEvents, fetchAdminEvents, loading, error } = useEventsStore();
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await api.get("/events/admin/list");
-        setItems(res.data?.data?.items || []);
-      } catch (err: any) {
-        setError(err?.response?.data?.message || "Failed to load events");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    fetchAdminEvents({ status: statusFilter === "all" ? undefined : statusFilter });
+  }, [statusFilter, fetchAdminEvents]);
 
   return (
     <div className="p-4 md:p-6">
@@ -30,12 +18,20 @@ export default function AdminEventsList() {
         <h1 className="text-xl font-semibold">Events</h1>
         <Link to="/admin/events/new" className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm">Create Event</Link>
       </div>
+      <div className="mb-3">
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="border rounded px-2 py-1 text-sm">
+          <option value="all">All</option>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
 
       {loading ? (
         <div className="flex items-center gap-2 text-slate-600"><Spinner size={18}/> Loading events...</div>
       ) : error ? (
         <div className="text-red-600 text-sm">{error}</div>
-      ) : items.length === 0 ? (
+      ) : adminEvents.length === 0 ? (
         <div className="rounded border bg-white p-6 text-center text-slate-600">No events yet.</div>
       ) : (
         <div className="overflow-x-auto bg-white rounded border">
@@ -50,7 +46,7 @@ export default function AdminEventsList() {
               </tr>
             </thead>
             <tbody>
-              {items.map((ev) => {
+              {adminEvents.map((ev) => {
                 const start = ev.start_date ? new Date(ev.start_date) : null;
                 const when = start ? `${start.toLocaleDateString()} ${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : "-";
                 return (

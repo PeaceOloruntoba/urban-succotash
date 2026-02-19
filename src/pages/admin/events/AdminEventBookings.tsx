@@ -1,38 +1,30 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { api } from "../../../lib/axios";
+import { useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import Spinner from "../../../components/Spinner";
+import { useEventsStore } from "../../../stores/events";
 
 export default function AdminEventBookings() {
   const { id } = useParams();
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { eventBookings, fetchEventBookings, loading, error } = useEventsStore();
 
   useEffect(() => {
     if (!id) return;
     (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await api.get(`/events/${id}/bookings`);
-        setBookings(res.data?.data?.bookings || []);
-      } catch (err: any) {
-        setError(err?.response?.data?.message || "Failed to load bookings");
-      } finally {
-        setLoading(false);
-      }
+      await fetchEventBookings(id);
     })();
-  }, [id]);
+  }, [id, fetchEventBookings]);
 
   return (
     <div className="p-4 md:p-6">
-      <h1 className="text-2xl font-bold mb-4">Event Bookings</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">Event Bookings</h1>
+        <Link to={`/admin/events/${id}`} className="text-sm text-blue-700 hover:underline">Back to event</Link>
+      </div>
       {loading ? (
         <div className="flex items-center gap-2"><Spinner /> Loading bookings...</div>
       ) : error ? (
         <div className="text-red-600">{error}</div>
-      ) : bookings.length === 0 ? (
+      ) : eventBookings.length === 0 ? (
         <div className="bg-white p-6 rounded-lg shadow-sm text-center text-slate-600">No bookings for this event yet.</div>
       ) : (
         <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
@@ -47,7 +39,7 @@ export default function AdminEventBookings() {
               </tr>
             </thead>
             <tbody>
-              {bookings.map((b) => (
+              {eventBookings.map((b) => (
                 <tr key={b.id} className="border-t hover:bg-slate-50">
                   <td className="py-3 px-4 font-medium">{b.attendee_name}<br/><span className="text-xs text-slate-500">{b.attendee_email}</span></td>
                   <td className="py-3 px-4 font-mono text-xs">{b.ticket_code}</td>
