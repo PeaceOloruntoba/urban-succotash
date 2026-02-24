@@ -27,7 +27,7 @@ export default function AdminEventEdit() {
       setError(null);
       try {
         const details = await fetchAdminEventById(id);
-        setForm(details?.event || {});
+        setForm(details?.event || details || {});
       } catch (err: any) {
         setError(err?.response?.data?.message || "Failed to load event");
       }
@@ -102,8 +102,8 @@ export default function AdminEventEdit() {
         <div>
           <label className="block text-sm font-medium mb-1">Cover Image</label>
           <input type="file" accept="image/*" onChange={handleCoverChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 shadow-sm focus:ring-2 focus:ring-blue-800 focus:border-transparent" />
-          {(coverPreview || currentEventDetails?.event?.cover_image_url) && (
-            <img src={coverPreview || currentEventDetails?.event?.cover_image_url} alt="cover" className="mt-2 w-full max-h-48 object-cover rounded" />
+          {(coverPreview || currentEventDetails?.event?.cover_image_url || (currentEventDetails as any)?.cover_image_url) && (
+            <img src={coverPreview || currentEventDetails?.event?.cover_image_url || (currentEventDetails as any)?.cover_image_url} alt="cover" className="mt-2 w-full max-h-48 object-cover rounded" />
           )}
         </div>
         <div className="flex justify-end">
