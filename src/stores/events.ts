@@ -42,6 +42,11 @@ type EventsState = {
   fetchAdminEvents: (filters?: any) => Promise<void>;
   fetchAdminEventById: (id: string) => Promise<any | null>;
   fetchEventBookings: (id: string) => Promise<void>;
+  // Sessions
+  fetchEventSessions: (id: string) => Promise<void>;
+  addEventSession: (id: string, payload: { title?: string; description?: string; locationName?: string; startAt: string; endAt: string; displayOrder?: number }) => Promise<any>;
+  updateEventSession: (id: string, sessionId: string, payload: Partial<{ title: string; description: string; locationName: string; startAt: string; endAt: string; displayOrder: number }>) => Promise<any>;
+  deleteEventSession: (id: string, sessionId: string) => Promise<void>;
   // Tickets
   createTicket: (eventId: string, payload: {
     name: string;
@@ -265,6 +270,46 @@ export const useEventsStore = create<EventsState>((set, get) => ({
       set({ eventBookings: res.data?.data?.bookings || [], loading: false });
     } catch (err: any) {
       set({ error: err?.response?.data?.message || err.message, loading: false });
+    }
+  },
+  fetchEventSessions: async (id: string) => {
+    try {
+      const res = await api.get(`/events/${id}/sessions`);
+      const items = res.data?.data?.items || [];
+      const current = get().currentEventDetails || {};
+      set({ currentEventDetails: { ...current, sessions: items } });
+    } catch {}
+  },
+  addEventSession: async (id, payload) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await api.post(`/events/${id}/sessions`, payload);
+      set({ loading: false });
+      return res.data?.data?.item || res.data?.data;
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || err.message, loading: false });
+      throw err;
+    }
+  },
+  updateEventSession: async (id, sessionId, payload) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await api.patch(`/events/${id}/sessions/${sessionId}`, payload);
+      set({ loading: false });
+      return res.data?.data?.item || res.data?.data;
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || err.message, loading: false });
+      throw err;
+    }
+  },
+  deleteEventSession: async (id, sessionId) => {
+    set({ loading: true, error: null });
+    try {
+      await api.delete(`/events/${id}/sessions/${sessionId}`);
+      set({ loading: false });
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || err.message, loading: false });
+      throw err;
     }
   },
   createTicket: async (eventId, payload) => {

@@ -60,6 +60,7 @@ export default function AdminEventDetail() {
             <RouterLink to={`/admin/events/${id}/images`} className="px-3 py-2 rounded border bg-white/80 hover:bg-white text-sm">Manage Images</RouterLink>
             <RouterLink to={`/admin/events/${id}/tickets`} className="px-3 py-2 rounded border bg-white/80 hover:bg-white text-sm">Manage Tickets</RouterLink>
             <RouterLink to={`/admin/events/${id}/speakers`} className="px-3 py-2 rounded border bg-white/80 hover:bg-white text-sm">Manage Speakers</RouterLink>
+            <RouterLink to={`/admin/events/${id}/schedule`} className="px-3 py-2 rounded border bg-white/80 hover:bg-white text-sm">Manage Schedule</RouterLink>
             <RouterLink to={`/admin/events/${id}/coupons/new`} className="px-3 py-2 rounded border bg-white/80 hover:bg-white text-sm">Create Coupon</RouterLink>
             <RouterLink to={`/admin/events/${id}/bookings`} className="px-3 py-2 rounded border bg-white/80 hover:bg-white text-sm">View Bookings</RouterLink>
           </div>

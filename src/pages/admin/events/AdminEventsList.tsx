@@ -108,6 +108,13 @@ export default function AdminEventsList() {
                           <Pencil size={16} />
                         </Link>
                         <Link
+                          to={`/admin/events/${ev.id}/schedule`}
+                          title="Schedule"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-50 text-teal-700 hover:bg-teal-100"
+                        >
+                          <Calendar size={16} />
+                        </Link>
+                        <Link
                           to={`/admin/events/${ev.id}/bookings`}
                           title="Bookings"
                           className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-50 text-purple-700 hover:bg-purple-100"

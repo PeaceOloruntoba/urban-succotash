@@ -35,6 +35,7 @@ import AdminEventTicketEdit from "./pages/admin/events/AdminEventTicketEdit";
 import AdminEventSpeakers from "./pages/admin/events/AdminEventSpeakers";
 import AdminEventCouponCreate from "./pages/admin/events/AdminEventCouponCreate";
 import AdminEventImages from "./pages/admin/events/AdminEventImages";
+import AdminEventSchedule from "./pages/admin/events/AdminEventSchedule";
 import AdminPropertiesList from "./pages/admin/properties/AdminPropertiesList";
 import AdminPropertyDetail from "./pages/admin/properties/AdminPropertyDetail";
 import AdminPropertyEdit from "./pages/admin/properties/AdminPropertyEdit";
@@ -99,6 +100,7 @@ function AppRoutes() {
         <Route path="/admin/events/:id/speakers" element={<AdminEventSpeakers />} />
         <Route path="/admin/events/:id/coupons/new" element={<AdminEventCouponCreate />} />
         <Route path="/admin/events/:id/images" element={<AdminEventImages />} />
+        <Route path="/admin/events/:id/schedule" element={<AdminEventSchedule />} />
         {/* Properties */}
         <Route path="/admin/properties" element={<AdminPropertiesList />} />
         <Route path="/admin/properties/:id" element={<AdminPropertyDetail />} />

@@ -109,6 +109,7 @@ export default function EventDetailPage() {
   const [images, setImages] = useState<EventImage[]>([]);
   const [speakers, setSpeakers] = useState<EventSpeaker[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [sessions, setSessions] = useState<Array<{ id: string; title?: string; location_name?: string; start_at: string; end_at: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -143,12 +144,13 @@ export default function EventDetailPage() {
       const res = await api.get(`/events/${id}`);
       const data = res.data?.data || {};
       
-      // Handle response structure - getEventWithDetails returns { ...event, images, speakers, tickets }
+      // Handle response structure - getEventWithDetails returns { ...event, images, speakers, tickets, sessions }
       const eventData = data.id ? data : data.item || data;
       setEvent(eventData);
       setImages(data.images || []);
       setSpeakers(data.speakers || []);
       setTickets(data.tickets || []);
+      setSessions(data.sessions || []);
     } catch (err: any) {
       console.error("Load event error:", err);
       toast.error(err.response?.data?.message || "Failed to load event");
@@ -482,6 +484,26 @@ export default function EventDetailPage() {
             {/* Event Details */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-3xl font-bold text-slate-900 mb-6">Event Details</h2>
+              {sessions.length > 0 && (
+                <div className="mb-8">
+                  <div className="text-sm text-slate-600 mb-2">Schedule</div>
+                  <div className="space-y-3">
+                    {sessions.map((s) => {
+                      const start = new Date(s.start_at);
+                      const end = new Date(s.end_at);
+                      const day = start.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
+                      const timeRange = `${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+                      return (
+                        <div key={s.id} className="p-3 border rounded-lg">
+                          <div className="text-xs text-slate-600">{day}</div>
+                          <div className="font-semibold">{s.title || "Session"}</div>
+                          <div className="text-slate-600 text-sm">{timeRange}{s.location_name ? ` · ${s.location_name}` : ""}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <div className="text-sm text-slate-600 mb-1">Date & Time</div>
