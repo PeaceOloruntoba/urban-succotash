@@ -44,6 +44,7 @@ export default function PodcastDetailPage() {
   const [likedComments, setLikedComments] = useState<Set<number>>(new Set());
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [anonLiked, setAnonLiked] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
@@ -100,7 +101,15 @@ export default function PodcastDetailPage() {
 
   const handleLike = async () => {
     if (!user) {
-      toast.error("Please login to like");
+      try {
+        if (anonLiked) return;
+        await api.post(`/podcasts/${id}/like/anon`);
+        setAnonLiked(true);
+        setStats((prev) => ({ ...prev, likes: prev.likes + 1 }));
+        toast.success("Thanks for the like!");
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Failed to like");
+      }
       return;
     }
     try {
@@ -140,13 +149,13 @@ export default function PodcastDetailPage() {
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast.error("Please login to comment");
-      return;
-    }
     if (!newComment.trim()) return;
     try {
-      await api.post(`/podcasts/${id}/comments`, { content: newComment });
+      if (user) {
+        await api.post(`/podcasts/${id}/comments`, { content: newComment });
+      } else {
+        await api.post(`/podcasts/${id}/comments/anon`, { content: newComment });
+      }
       setNewComment("");
       loadComments();
       toast.success("Comment added");
@@ -301,24 +310,25 @@ export default function PodcastDetailPage() {
             <div className="card">
               <h2 className="text-xl font-semibold mb-4">Comments</h2>
 
-              {/* Add Comment */}
-              {user ? (
-                <form onSubmit={handleAddComment} className="mb-6">
-                  <textarea
-                    placeholder="Add a comment..."
-                    rows={3}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent mb-2"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    required
-                  />
-                  <button type="submit" className="btn btn-primary">
-                    Post Comment
-                  </button>
-                </form>
-              ) : (
-                <p className="text-slate-600 mb-4">Please login to comment</p>
-              )}
+              {/* Add Comment (supports anonymous) */}
+              <form onSubmit={handleAddComment} className="mb-6">
+                <textarea
+                  placeholder={user ? "Add a comment..." : "Add a comment anonymously..."}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent mb-2"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  required
+                />
+                <button type="submit" className="btn btn-primary">
+                  Post Comment
+                </button>
+                {!user && (
+                  <div className="text-xs text-slate-500 mt-2">
+                    Posting anonymously. Login to display your name and like comments.
+                  </div>
+                )}
+              </form>
 
               {/* Comments List */}
               <div className="space-y-6">
