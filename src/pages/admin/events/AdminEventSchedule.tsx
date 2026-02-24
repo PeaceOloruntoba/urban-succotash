@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export default function AdminEventSchedule() {
   const { id } = useParams();
-  const { currentEventDetails, fetchAdminEventById, fetchEventSessions, addEventSession, updateEventSession, deleteEventSession, loading } = useEventsStore();
+  const { currentEventDetails, fetchAdminEventById, fetchEventSessions, addEventSession, deleteEventSession, loading } = useEventsStore();
   const [form, setForm] = useState<any>({ title: "", locationName: "", startAt: "", endAt: "", displayOrder: 0, description: "" });
   const [working, setWorking] = useState(false);
 
