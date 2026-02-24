@@ -292,7 +292,23 @@ export default function EventDetailPage() {
   }
 
   const startDate = formatDate(event.start_date);
-  const endDate = formatDate(event.end_date);
+  // const endDate = formatDate(event.end_date);
+  const firstDayStart = (days && days.length > 0) ? new Date(days[0].day_start_at) : null;
+  const firstDayLabel = firstDayStart
+    ? {
+        full: firstDayStart.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        time: firstDayStart.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      }
+    : null;
+  const multiDayCount = days?.length || 0;
   const thumbnail = images.find((img) => img.is_thumbnail) || images[0];
   const galleryImages = images.filter((img) => !img.is_thumbnail || images.length === 1);
 
@@ -338,12 +354,21 @@ export default function EventDetailPage() {
               <div className="flex flex-wrap gap-6 text-white/90">
                 <div className="flex items-center gap-2">
                   <Calendar size={20} />
-                  <span className="font-semibold">{startDate.full}</span>
+                  <span className="font-semibold">
+                    {firstDayLabel ? firstDayLabel.full : startDate.full}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock size={20} />
-                  <span>{startDate.time} - {endDate.time}</span>
+                  <span>
+                    {firstDayLabel ? firstDayLabel.time : startDate.time}
+                  </span>
                 </div>
+                {multiDayCount > 1 && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-white font-semibold text-sm backdrop-blur-sm">
+                    Multi‑day • {multiDayCount} {multiDayCount > 1 ? "days" : "day"}
+                  </span>
+                )}
                 {event.venue_type !== "online" && event.venue_address && (
                   <div className="flex items-center gap-2">
                     <MapPin size={20} />
@@ -510,10 +535,17 @@ export default function EventDetailPage() {
                 <div>
                   <div className="text-sm text-slate-600 mb-1">Date & Time</div>
                   <div className="font-semibold text-slate-900">
-                    {startDate.full}
+                    {firstDayLabel ? firstDayLabel.full : startDate.full}
                     <br />
-                    <span className="text-blue-800">{startDate.time} - {endDate.time}</span>
+                    <span className="text-blue-800">
+                      {firstDayLabel ? firstDayLabel.time : startDate.time}
+                    </span>
                   </div>
+                  {multiDayCount > 1 && (
+                    <div className="text-sm text-slate-600 mt-1">
+                      Multi‑day event • {multiDayCount} {multiDayCount > 1 ? "days" : "day"}
+                    </div>
+                  )}
                 </div>
                 {event.venue_type !== "online" && event.venue_address && (
                   <div>
