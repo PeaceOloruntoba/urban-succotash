@@ -47,6 +47,11 @@ type EventsState = {
   addEventSession: (id: string, payload: { title?: string; description?: string; locationName?: string; startAt: string; endAt: string; displayOrder?: number }) => Promise<any>;
   updateEventSession: (id: string, sessionId: string, payload: Partial<{ title: string; description: string; locationName: string; startAt: string; endAt: string; displayOrder: number }>) => Promise<any>;
   deleteEventSession: (id: string, sessionId: string) => Promise<void>;
+  // Days
+  fetchEventDays: (id: string) => Promise<void>;
+  addEventDay: (id: string, payload: { dayIndex: number; dayStartAt: string; dayEndAt: string }) => Promise<any>;
+  updateEventDay: (id: string, dayId: string, payload: Partial<{ dayIndex: number; dayStartAt: string; dayEndAt: string }>) => Promise<any>;
+  deleteEventDay: (id: string, dayId: string) => Promise<void>;
   // Tickets
   createTicket: (eventId: string, payload: {
     name: string;
@@ -306,6 +311,46 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await api.delete(`/events/${id}/sessions/${sessionId}`);
+      set({ loading: false });
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || err.message, loading: false });
+      throw err;
+    }
+  },
+  fetchEventDays: async (id: string) => {
+    try {
+      const res = await api.get(`/events/${id}/days`);
+      const items = res.data?.data?.items || [];
+      const current = get().currentEventDetails || {};
+      set({ currentEventDetails: { ...current, days: items } });
+    } catch {}
+  },
+  addEventDay: async (id, payload) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await api.post(`/events/${id}/days`, payload);
+      set({ loading: false });
+      return res.data?.data?.item || res.data?.data;
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || err.message, loading: false });
+      throw err;
+    }
+  },
+  updateEventDay: async (id, dayId, payload) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await api.patch(`/events/${id}/days/${dayId}`, payload);
+      set({ loading: false });
+      return res.data?.data?.item || res.data?.data;
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || err.message, loading: false });
+      throw err;
+    }
+  },
+  deleteEventDay: async (id, dayId) => {
+    set({ loading: true, error: null });
+    try {
+      await api.delete(`/events/${id}/days/${dayId}`);
       set({ loading: false });
     } catch (err: any) {
       set({ error: err?.response?.data?.message || err.message, loading: false });

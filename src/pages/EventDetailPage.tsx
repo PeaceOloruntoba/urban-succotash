@@ -110,6 +110,7 @@ export default function EventDetailPage() {
   const [speakers, setSpeakers] = useState<EventSpeaker[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [sessions, setSessions] = useState<Array<{ id: string; title?: string; location_name?: string; start_at: string; end_at: string }>>([]);
+  const [days, setDays] = useState<Array<{ id: string; day_index: number; day_start_at: string; day_end_at: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -144,13 +145,14 @@ export default function EventDetailPage() {
       const res = await api.get(`/events/${id}`);
       const data = res.data?.data || {};
       
-      // Handle response structure - getEventWithDetails returns { ...event, images, speakers, tickets, sessions }
+      // Handle response structure - getEventWithDetails returns { ...event, images, speakers, tickets, sessions, days }
       const eventData = data.id ? data : data.item || data;
       setEvent(eventData);
       setImages(data.images || []);
       setSpeakers(data.speakers || []);
       setTickets(data.tickets || []);
       setSessions(data.sessions || []);
+      setDays(data.days || []);
     } catch (err: any) {
       console.error("Load event error:", err);
       toast.error(err.response?.data?.message || "Failed to load event");
@@ -566,6 +568,23 @@ export default function EventDetailPage() {
                 )}
               </div>
             </div>
+            {days.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-3xl font-bold text-slate-900 mb-6">Event Days</h2>
+                <div className="space-y-3">
+                  {days.map((d) => {
+                    const start = new Date(d.day_start_at);
+                    const end = new Date(d.day_end_at);
+                    const label = `Day ${d.day_index} - ${start.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}: ${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+                    return (
+                      <div key={d.id} className="p-3 border rounded-lg">
+                        <div className="font-semibold">{label}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column - Booking Sidebar */}
