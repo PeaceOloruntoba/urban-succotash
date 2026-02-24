@@ -43,6 +43,11 @@ export default function PropertyDetailPage() {
   const [images, setImages] = useState<PropertyImage[]>([]);
   const [features, setFeatures] = useState<PropertyFeature[]>([]);
   const [loading, setLoading] = useState(true);
+  const [units, setUnits] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [pois, setPOIs] = useState<any[]>([]);
   const [inquiryForm, setInquiryForm] = useState({
     name: "",
     email: "",
@@ -68,6 +73,11 @@ export default function PropertyDetailPage() {
       setProperty((st.propertyDetail as any) || null);
       setImages(st.propertyImages as any || []);
       setFeatures(st.propertyFeatures as any || []);
+      setUnits(st.propertyUnits as any || []);
+      setPlans(st.propertyPaymentPlans as any || []);
+      setVideos(st.propertyVideos as any || []);
+      setDocuments(st.propertyDocuments as any || []);
+      setPOIs(st.propertyPOIs as any || []);
       const primaryIdx = (st.propertyImages || []).findIndex((img: PropertyImage) => img.is_primary);
       setActiveIndex(primaryIdx >= 0 ? primaryIdx : 0);
     } catch (err: any) {
@@ -224,7 +234,9 @@ export default function PropertyDetailPage() {
               <p className="text-2xl font-bold text-blue-800 mb-4">
                 {formatPrice(property.price, property.currency)}
               </p>
-              <p className="text-slate-600 mb-6">{property.description}</p>
+              {property.description && (
+                <div className="prose max-w-none text-slate-700 mb-6" dangerouslySetInnerHTML={{ __html: property.description }} />
+              )}
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {property.bedrooms && (
@@ -270,6 +282,70 @@ export default function PropertyDetailPage() {
               )}
             </div>
 
+            {units.length > 0 && (
+              <div className="card mb-6">
+                <h3 className="text-lg font-semibold mb-3">Available Units</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {units.map((u) => (
+                    <div key={u.id} className="p-4 border rounded-lg">
+                      <div className="font-semibold">{u.name}</div>
+                      <div className="text-slate-600 text-sm mt-1">
+                        {[u.bedrooms && `${u.bedrooms} bed`, u.bathrooms && `${u.bathrooms} bath`, u.square_feet && `${u.square_feet} sqft`].filter(Boolean).join(" · ")}
+                      </div>
+                      <div className="text-blue-800 font-bold mt-2">
+                        {formatPrice(u.price, u.currency || "NGN")}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {plans.length > 0 && (
+              <div className="card mb-6">
+                <h3 className="text-lg font-semibold mb-3">Payment Plans</h3>
+                <div className="space-y-3">
+                  {plans.map((p) => (
+                    <div key={p.id} className="p-4 border rounded-lg">
+                      <div className="font-semibold capitalize">{p.plan_type} {p.name ? `– ${p.name}` : ""}</div>
+                      <div className="text-slate-600 text-sm mt-1">
+                        {[p.down_payment_percent && `Down ${p.down_payment_percent}%`, p.tenure_months && `${p.tenure_months} months`, p.interest_rate_percent && `${p.interest_rate_percent}% interest`].filter(Boolean).join(" · ")}
+                      </div>
+                      {p.notes && <div className="text-sm text-slate-700 mt-1">{p.notes}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {videos.length > 0 && (
+              <div className="card mb-6">
+                <h3 className="text-lg font-semibold mb-3">Videos</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {videos.map((v) => (
+                    <div key={v.id} className="aspect-video bg-black/5 rounded overflow-hidden">
+                      <video src={v.video_url} controls className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {documents.length > 0 && (
+              <div className="card mb-6">
+                <h3 className="text-lg font-semibold mb-3">Documents</h3>
+                <ul className="list-disc pl-5 text-blue-800">
+                  {documents.map((d) => (
+                    <li key={d.id}>
+                      <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        {d.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Location */}
             <div className="card">
               <h3 className="text-lg font-semibold mb-3">Location</h3>
@@ -279,6 +355,18 @@ export default function PropertyDetailPage() {
                 <br />
                 {property.city}, {property.state}
               </p>
+              {pois.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-md font-semibold mb-2">Neighborhood Highlights</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {pois.map((p) => (
+                      <span key={p.id} className="px-3 py-1 bg-slate-100 text-slate-800 rounded-full text-sm">
+                        {p.title}{p.distance_km ? ` • ${p.distance_km}km` : ""}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

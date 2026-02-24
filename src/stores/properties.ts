@@ -63,6 +63,11 @@ type PropertiesState = {
   propertyImages: PropertyImage[];
   propertyFeatures: PropertyFeature[];
   propertyContacts: PropertyContact[];
+  propertyUnits: any[];
+  propertyPaymentPlans: any[];
+  propertyVideos: any[];
+  propertyDocuments: any[];
+  propertyPOIs: any[];
   fetchAdminList: (filters?: any) => Promise<void>;
   deleteProperty: (id: string) => Promise<void>;
   createProperty: (payload: any) => Promise<Property | null>;
@@ -77,6 +82,22 @@ type PropertiesState = {
   deletePropertyFeature: (id: string, featureId: number) => Promise<void>;
   fetchPropertyContacts: (id: string) => Promise<void>;
   submitInquiry: (id: string, body: { name: string; email: string; phone?: string; message?: string }) => Promise<void>;
+  // Extended content
+  fetchPropertyUnits: (id: string) => Promise<void>;
+  addPropertyUnit: (id: string, body: any) => Promise<void>;
+  deletePropertyUnit: (id: string, unitId: string) => Promise<void>;
+  fetchPropertyPlans: (id: string) => Promise<void>;
+  addPropertyPlan: (id: string, body: any) => Promise<void>;
+  deletePropertyPlan: (id: string, planId: string) => Promise<void>;
+  fetchPropertyVideos: (id: string) => Promise<void>;
+  addPropertyVideo: (id: string, body: any) => Promise<void>;
+  deletePropertyVideo: (id: string, videoId: string) => Promise<void>;
+  fetchPropertyDocuments: (id: string) => Promise<void>;
+  addPropertyDocument: (id: string, body: any) => Promise<void>;
+  deletePropertyDocument: (id: string, documentId: string) => Promise<void>;
+  fetchPropertyPOIs: (id: string) => Promise<void>;
+  addPropertyPOI: (id: string, body: any) => Promise<void>;
+  deletePropertyPOI: (id: string, poiId: string) => Promise<void>;
 };
 
 export const usePropertiesStore = create<PropertiesState>((set, get) => ({
@@ -119,6 +140,11 @@ export const usePropertiesStore = create<PropertiesState>((set, get) => ({
   propertyImages: [],
   propertyFeatures: [],
   propertyContacts: [],
+  propertyUnits: [],
+  propertyPaymentPlans: [],
+  propertyVideos: [],
+  propertyDocuments: [],
+  propertyPOIs: [],
   fetchAdminList: async (filters = {}) => {
     set({ adminLoading: true, error: null });
     try {
@@ -151,6 +177,11 @@ export const usePropertiesStore = create<PropertiesState>((set, get) => ({
         propertyDetail: res.data?.data?.item || null,
         propertyImages: res.data?.data?.images || [],
         propertyFeatures: res.data?.data?.features || [],
+        propertyUnits: res.data?.data?.units || [],
+        propertyPaymentPlans: res.data?.data?.plans || [],
+        propertyVideos: res.data?.data?.videos || [],
+        propertyDocuments: res.data?.data?.documents || [],
+        propertyPOIs: res.data?.data?.pois || [],
         loading: false,
       });
     } catch (err: any) {
@@ -194,5 +225,70 @@ export const usePropertiesStore = create<PropertiesState>((set, get) => ({
   },
   submitInquiry: async (id: string, body) => {
     await api.post(`/properties/${id}/inquiry`, body);
+  },
+  fetchPropertyUnits: async (id: string) => {
+    const res = await api.get(`/properties/${id}/units`);
+    set({ propertyUnits: res.data?.data?.items || [] });
+  },
+  addPropertyUnit: async (id: string, body: any) => {
+    await api.post(`/properties/${id}/units`, body);
+    const res = await api.get(`/properties/${id}/units`);
+    set({ propertyUnits: res.data?.data?.items || [] });
+  },
+  deletePropertyUnit: async (id: string, unitId: string) => {
+    await api.delete(`/properties/${id}/units/${unitId}`);
+    set({ propertyUnits: get().propertyUnits.filter((u) => u.id !== unitId) });
+  },
+  fetchPropertyPlans: async (id: string) => {
+    const res = await api.get(`/properties/${id}/plans`);
+    set({ propertyPaymentPlans: res.data?.data?.items || [] });
+  },
+  addPropertyPlan: async (id: string, body: any) => {
+    await api.post(`/properties/${id}/plans`, body);
+    const res = await api.get(`/properties/${id}/plans`);
+    set({ propertyPaymentPlans: res.data?.data?.items || [] });
+  },
+  deletePropertyPlan: async (id: string, planId: string) => {
+    await api.delete(`/properties/${id}/plans/${planId}`);
+    set({ propertyPaymentPlans: get().propertyPaymentPlans.filter((p) => p.id !== planId) });
+  },
+  fetchPropertyVideos: async (id: string) => {
+    const res = await api.get(`/properties/${id}/videos`);
+    set({ propertyVideos: res.data?.data?.items || [] });
+  },
+  addPropertyVideo: async (id: string, body: any) => {
+    await api.post(`/properties/${id}/videos`, body);
+    const res = await api.get(`/properties/${id}/videos`);
+    set({ propertyVideos: res.data?.data?.items || [] });
+  },
+  deletePropertyVideo: async (id: string, videoId: string) => {
+    await api.delete(`/properties/${id}/videos/${videoId}`);
+    set({ propertyVideos: get().propertyVideos.filter((v) => v.id !== videoId) });
+  },
+  fetchPropertyDocuments: async (id: string) => {
+    const res = await api.get(`/properties/${id}/documents`);
+    set({ propertyDocuments: res.data?.data?.items || [] });
+  },
+  addPropertyDocument: async (id: string, body: any) => {
+    await api.post(`/properties/${id}/documents`, body);
+    const res = await api.get(`/properties/${id}/documents`);
+    set({ propertyDocuments: res.data?.data?.items || [] });
+  },
+  deletePropertyDocument: async (id: string, documentId: string) => {
+    await api.delete(`/properties/${id}/documents/${documentId}`);
+    set({ propertyDocuments: get().propertyDocuments.filter((d) => d.id !== documentId) });
+  },
+  fetchPropertyPOIs: async (id: string) => {
+    const res = await api.get(`/properties/${id}/pois`);
+    set({ propertyPOIs: res.data?.data?.items || [] });
+  },
+  addPropertyPOI: async (id: string, body: any) => {
+    await api.post(`/properties/${id}/pois`, body);
+    const res = await api.get(`/properties/${id}/pois`);
+    set({ propertyPOIs: res.data?.data?.items || [] });
+  },
+  deletePropertyPOI: async (id: string, poiId: string) => {
+    await api.delete(`/properties/${id}/pois/${poiId}`);
+    set({ propertyPOIs: get().propertyPOIs.filter((p) => p.id !== poiId) });
   },
 }));

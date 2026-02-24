@@ -36,6 +36,7 @@ type EditForm = {
 
 export default function AdminPropertyEdit() {
   const { id } = useParams();
+  const rteRef = useRef<HTMLDivElement | null>(null);
   const [form, setForm] = useState<EditForm>({
     title: "",
     description: "",
@@ -69,6 +70,24 @@ export default function AdminPropertyEdit() {
   const [displayOrder, setDisplayOrder] = useState<number>(0);
   const [features, setFeatures] = useState<any[]>([]);
   const [featureName, setFeatureName] = useState("");
+  const [units, setUnits] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [pois, setPOIs] = useState<any[]>([]);
+  const [unitForm, setUnitForm] = useState<any>({ name: "", bedrooms: "", bathrooms: "", squareFeet: "", price: "", currency: "NGN", withBq: false, categoryName: "", displayOrder: 0 });
+  const [planForm, setPlanForm] = useState<any>({ planType: "", name: "", downPaymentPercent: "", tenureMonths: "", interestRatePercent: "", notes: "", promoEndsAt: "" });
+  const [videoForm, setVideoForm] = useState<any>({ videoUrl: "", displayOrder: 0 });
+  const [documentForm, setDocumentForm] = useState<any>({ title: "", fileUrl: "", displayOrder: 0 });
+  const [poiForm, setPoiForm] = useState<any>({ title: "", poiType: "", distanceKm: "", description: "" });
+
+  const exec = (cmd: string, val?: string) => {
+    document.execCommand(cmd, false, val);
+    setForm((prev) => ({ ...prev, description: rteRef.current?.innerHTML || "" }));
+  };
+  const syncHtml = () => {
+    setForm((prev) => ({ ...prev, description: rteRef.current?.innerHTML || "" }));
+  };
 
   useEffect(() => {
     if (!id || id === 'new') {
@@ -250,6 +269,110 @@ export default function AdminPropertyEdit() {
     }
   };
 
+  const reloadExtended = async () => {
+    if (!id || id === "new") return;
+    const s = usePropertiesStore.getState();
+    await Promise.all([
+      s.fetchPropertyUnits(id),
+      s.fetchPropertyPlans(id),
+      s.fetchPropertyVideos(id),
+      s.fetchPropertyDocuments(id),
+      s.fetchPropertyPOIs(id),
+    ]);
+    setUnits(usePropertiesStore.getState().propertyUnits || []);
+    setPlans(usePropertiesStore.getState().propertyPaymentPlans || []);
+    setVideos(usePropertiesStore.getState().propertyVideos || []);
+    setDocuments(usePropertiesStore.getState().propertyDocuments || []);
+    setPOIs(usePropertiesStore.getState().propertyPOIs || []);
+  };
+  useEffect(() => {
+    if (id && id !== "new") reloadExtended();
+  }, [id]);
+
+  const addUnit = async () => {
+    if (!id || id === "new" || !unitForm.name || !unitForm.price) return;
+    try {
+      await usePropertiesStore.getState().addPropertyUnit(id, {
+        ...unitForm,
+        bedrooms: unitForm.bedrooms ? Number(unitForm.bedrooms) : undefined,
+        bathrooms: unitForm.bathrooms ? Number(unitForm.bathrooms) : undefined,
+        squareFeet: unitForm.squareFeet ? Number(unitForm.squareFeet) : undefined,
+        price: Number(unitForm.price),
+      });
+      setUnitForm({ name: "", bedrooms: "", bathrooms: "", squareFeet: "", price: "", currency: "NGN", withBq: false, categoryName: "", displayOrder: 0 });
+      await reloadExtended();
+      toast.success("Unit added");
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || "Failed to add unit");
+    }
+  };
+  const deleteUnit = async (uid: string) => {
+    if (!id || id === "new") return;
+    await usePropertiesStore.getState().deletePropertyUnit(id, uid);
+    setUnits(usePropertiesStore.getState().propertyUnits || []);
+  };
+
+  const addPlan = async () => {
+    if (!id || id === "new" || !planForm.planType) return;
+    try {
+      await usePropertiesStore.getState().addPropertyPlan(id, {
+        ...planForm,
+        downPaymentPercent: planForm.downPaymentPercent ? Number(planForm.downPaymentPercent) : undefined,
+        tenureMonths: planForm.tenureMonths ? Number(planForm.tenureMonths) : undefined,
+        interestRatePercent: planForm.interestRatePercent ? Number(planForm.interestRatePercent) : undefined,
+      });
+      setPlanForm({ planType: "", name: "", downPaymentPercent: "", tenureMonths: "", interestRatePercent: "", notes: "", promoEndsAt: "" });
+      await reloadExtended();
+      toast.success("Payment plan added");
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || "Failed to add plan");
+    }
+  };
+  const deletePlan = async (pid: string) => {
+    if (!id || id === "new") return;
+    await usePropertiesStore.getState().deletePropertyPlan(id, pid);
+    setPlans(usePropertiesStore.getState().propertyPaymentPlans || []);
+  };
+
+  const addVideoItem = async () => {
+    if (!id || id === "new" || !videoForm.videoUrl) return;
+    await usePropertiesStore.getState().addPropertyVideo(id, videoForm);
+    setVideoForm({ videoUrl: "", displayOrder: 0 });
+    await reloadExtended();
+  };
+  const deleteVideoItem = async (vid: string) => {
+    if (!id || id === "new") return;
+    await usePropertiesStore.getState().deletePropertyVideo(id, vid);
+    setVideos(usePropertiesStore.getState().propertyVideos || []);
+  };
+
+  const addDocumentItem = async () => {
+    if (!id || id === "new" || !documentForm.title || !documentForm.fileUrl) return;
+    await usePropertiesStore.getState().addPropertyDocument(id, documentForm);
+    setDocumentForm({ title: "", fileUrl: "", displayOrder: 0 });
+    await reloadExtended();
+  };
+  const deleteDocumentItem = async (docId: string) => {
+    if (!id || id === "new") return;
+    await usePropertiesStore.getState().deletePropertyDocument(id, docId);
+    setDocuments(usePropertiesStore.getState().propertyDocuments || []);
+  };
+
+  const addPoiItem = async () => {
+    if (!id || id === "new" || !poiForm.title) return;
+    await usePropertiesStore.getState().addPropertyPOI(id, {
+      ...poiForm,
+      distanceKm: poiForm.distanceKm ? Number(poiForm.distanceKm) : undefined,
+    });
+    setPoiForm({ title: "", poiType: "", distanceKm: "", description: "" });
+    await reloadExtended();
+  };
+  const deletePoiItem = async (poiId: string) => {
+    if (!id || id === "new") return;
+    await usePropertiesStore.getState().deletePropertyPOI(id, poiId);
+    setPOIs(usePropertiesStore.getState().propertyPOIs || []);
+  };
+
   if (loading) return <div className="p-6"><Spinner /></div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
 
@@ -268,7 +391,28 @@ export default function AdminPropertyEdit() {
             <h2 className="text-lg font-semibold text-blue-900">Basics</h2>
           </div>
         <div><label className="block text-sm font-medium mb-1">Title</label><Input name="title" value={form.title || ''} onChange={handleChange} /></div>
-        <div><label className="block text-sm font-medium mb-1">Description</label><Textarea name="description" value={form.description || ''} onChange={handleChange} rows={5} /></div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Description</label>
+          <div className="border rounded-md">
+            <div className="flex flex-wrap gap-2 p-2 border-b bg-slate-50">
+              <button type="button" onClick={() => exec("bold")} className="px-2 py-1 text-sm border rounded bg-white">B</button>
+              <button type="button" onClick={() => exec("italic")} className="px-2 py-1 text-sm border rounded bg-white"><em>I</em></button>
+              <button type="button" onClick={() => exec("underline")} className="px-2 py-1 text-sm border rounded bg-white"><u>U</u></button>
+              <button type="button" onClick={() => exec("insertUnorderedList")} className="px-2 py-1 text-sm border rounded bg-white">• List</button>
+              <button type="button" onClick={() => exec("insertOrderedList")} className="px-2 py-1 text-sm border rounded bg-white">1. List</button>
+              <button type="button" onClick={() => { const url = prompt("Link URL"); if (url) exec("createLink", url); }} className="px-2 py-1 text-sm border rounded bg-white">Link</button>
+              <button type="button" onClick={() => exec("removeFormat")} className="px-2 py-1 text-sm border rounded bg-white">Clear</button>
+            </div>
+            <div
+              ref={rteRef}
+              contentEditable
+              className="min-h-[160px] p-3 focus:outline-none prose max-w-none"
+              onInput={syncHtml}
+              dangerouslySetInnerHTML={{ __html: form.description || "" }}
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-1">Rich text supported. HTML is stored.</p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Property Type</label>
@@ -476,6 +620,148 @@ export default function AdminPropertyEdit() {
                     <span key={f.id} className="inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm">
                       {f.feature_name}
                       <button onClick={() => removeFeature(f.id)} className="text-blue-900 hover:text-red-600">×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+          <h2 className="text-lg font-semibold mb-4">Units</h2>
+          {id === 'new' ? <p className="text-slate-600">Save the property first to manage units.</p> : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-2 mb-3">
+                <Input placeholder="Name" value={unitForm.name} onChange={(e: any) => setUnitForm({ ...unitForm, name: e.target.value })} />
+                <Input type="number" placeholder="Beds" value={unitForm.bedrooms} onChange={(e: any) => setUnitForm({ ...unitForm, bedrooms: e.target.value })} />
+                <Input type="number" placeholder="Baths" value={unitForm.bathrooms} onChange={(e: any) => setUnitForm({ ...unitForm, bathrooms: e.target.value })} />
+                <Input type="number" placeholder="Sqft" value={unitForm.squareFeet} onChange={(e: any) => setUnitForm({ ...unitForm, squareFeet: e.target.value })} />
+                <Input type="number" placeholder="Price" value={unitForm.price} onChange={(e: any) => setUnitForm({ ...unitForm, price: e.target.value })} />
+                <button onClick={addUnit} className="btn btn-primary">Add</button>
+              </div>
+              {units.length === 0 ? <p className="text-slate-600">No units yet.</p> : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="bg-slate-50"><th className="text-left p-2">Name</th><th className="text-left p-2">Specs</th><th className="text-left p-2">Price</th><th className="p-2">Actions</th></tr></thead>
+                    <tbody>
+                      {units.map((u) => (
+                        <tr key={u.id} className="border-t">
+                          <td className="p-2 font-medium">{u.name}</td>
+                          <td className="p-2 text-slate-600">{[u.bedrooms && `${u.bedrooms} bed`, u.bathrooms && `${u.bathrooms} bath`, u.square_feet && `${u.square_feet} sqft`].filter(Boolean).join(" · ")}</td>
+                          <td className="p-2">{new Intl.NumberFormat("en-NG", { style: "currency", currency: u.currency || "NGN", minimumFractionDigits: 0 }).format(u.price)}</td>
+                          <td className="p-2 text-right">
+                            <button onClick={() => deleteUnit(u.id)} className="text-rose-600 hover:underline">Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+          <h2 className="text-lg font-semibold mb-4">Payment Plans</h2>
+          {id === 'new' ? <p className="text-slate-600">Save the property first to manage plans.</p> : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-2 mb-3">
+                <Select value={planForm.planType} onChange={(e: any) => setPlanForm({ ...planForm, planType: e.target.value })}>
+                  <option value="">Type</option>
+                  <option value="mortgage">Mortgage</option>
+                  <option value="rent_to_own">Rent-to-Own</option>
+                  <option value="promo">Promo</option>
+                </Select>
+                <Input placeholder="Name (optional)" value={planForm.name} onChange={(e: any) => setPlanForm({ ...planForm, name: e.target.value })} />
+                <Input type="number" placeholder="Down %" value={planForm.downPaymentPercent} onChange={(e: any) => setPlanForm({ ...planForm, downPaymentPercent: e.target.value })} />
+                <Input type="number" placeholder="Tenure (months)" value={planForm.tenureMonths} onChange={(e: any) => setPlanForm({ ...planForm, tenureMonths: e.target.value })} />
+                <Input type="number" placeholder="Interest %" value={planForm.interestRatePercent} onChange={(e: any) => setPlanForm({ ...planForm, interestRatePercent: e.target.value })} />
+                <button onClick={addPlan} className="btn btn-primary">Add</button>
+              </div>
+              <Textarea placeholder="Notes" value={planForm.notes} onChange={(e: any) => setPlanForm({ ...planForm, notes: e.target.value })} />
+              {plans.length === 0 ? <p className="text-slate-600 mt-3">No plans yet.</p> : (
+                <div className="overflow-x-auto mt-3">
+                  <table className="w-full text-sm">
+                    <thead><tr className="bg-slate-50"><th className="text-left p-2">Type</th><th className="text-left p-2">Summary</th><th className="p-2">Actions</th></tr></thead>
+                    <tbody>
+                      {plans.map((p) => (
+                        <tr key={p.id} className="border-t">
+                          <td className="p-2 capitalize">{p.plan_type}</td>
+                          <td className="p-2 text-slate-600">{[p.name, p.down_payment_percent && `Down ${p.down_payment_percent}%`, p.tenure_months && `${p.tenure_months} mo`, p.interest_rate_percent && `${p.interest_rate_percent}%`].filter(Boolean).join(" · ")}</td>
+                          <td className="p-2 text-right"><button onClick={() => deletePlan(p.id)} className="text-rose-600 hover:underline">Delete</button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+          <h2 className="text-lg font-semibold mb-4">Videos</h2>
+          {id === 'new' ? <p className="text-slate-600">Save the property first to manage videos.</p> : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3">
+                <Input placeholder="Video URL" value={videoForm.videoUrl} onChange={(e: any) => setVideoForm({ ...videoForm, videoUrl: e.target.value })} />
+                <Input type="number" placeholder="Display order" value={videoForm.displayOrder} onChange={(e: any) => setVideoForm({ ...videoForm, displayOrder: Number(e.target.value || 0) })} />
+                <button onClick={addVideoItem} className="btn btn-primary">Add</button>
+              </div>
+              {videos.length === 0 ? <p className="text-slate-600">No videos yet.</p> : (
+                <div className="flex flex-wrap gap-3">
+                  {videos.map((v) => (
+                    <div key={v.id} className="border rounded p-2 w-64">
+                      <div className="text-xs text-slate-600 mb-1">Order {v.display_order}</div>
+                      <div className="truncate text-blue-700">{v.video_url}</div>
+                      <div className="mt-2 text-right"><button onClick={() => deleteVideoItem(v.id)} className="text-rose-600 hover:underline text-sm">Delete</button></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+          <h2 className="text-lg font-semibold mb-4">Documents</h2>
+          {id === 'new' ? <p className="text-slate-600">Save the property first to manage documents.</p> : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3">
+                <Input placeholder="Title" value={documentForm.title} onChange={(e: any) => setDocumentForm({ ...documentForm, title: e.target.value })} />
+                <Input placeholder="File URL" value={documentForm.fileUrl} onChange={(e: any) => setDocumentForm({ ...documentForm, fileUrl: e.target.value })} />
+                <Input type="number" placeholder="Display order" value={documentForm.displayOrder} onChange={(e: any) => setDocumentForm({ ...documentForm, displayOrder: Number(e.target.value || 0) })} />
+                <button onClick={addDocumentItem} className="btn btn-primary">Add</button>
+              </div>
+              {documents.length === 0 ? <p className="text-slate-600">No documents yet.</p> : (
+                <div className="flex flex-wrap gap-3">
+                  {documents.map((d) => (
+                    <div key={d.id} className="border rounded p-2 w-64">
+                      <div className="font-semibold truncate">{d.title}</div>
+                      <div className="text-xs text-blue-700 truncate">{d.file_url}</div>
+                      <div className="mt-2 text-right"><button onClick={() => deleteDocumentItem(d.id)} className="text-rose-600 hover:underline text-sm">Delete</button></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+          <h2 className="text-lg font-semibold mb-4">Points of Interest</h2>
+          {id === 'new' ? <p className="text-slate-600">Save the property first to manage POIs.</p> : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mb-3">
+                <Input placeholder="Title" value={poiForm.title} onChange={(e: any) => setPoiForm({ ...poiForm, title: e.target.value })} />
+                <Input placeholder="Type" value={poiForm.poiType} onChange={(e: any) => setPoiForm({ ...poiForm, poiType: e.target.value })} />
+                <Input type="number" placeholder="Distance (km)" value={poiForm.distanceKm} onChange={(e: any) => setPoiForm({ ...poiForm, distanceKm: e.target.value })} />
+                <Input placeholder="Description" value={poiForm.description} onChange={(e: any) => setPoiForm({ ...poiForm, description: e.target.value })} />
+                <button onClick={addPoiItem} className="btn btn-primary">Add</button>
+              </div>
+              {pois.length === 0 ? <p className="text-slate-600">No POIs yet.</p> : (
+                <div className="flex flex-wrap gap-2">
+                  {pois.map((p) => (
+                    <span key={p.id} className="inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      {p.title}{p.distance_km ? ` • ${p.distance_km}km` : ""}
+                      <button onClick={() => deletePoiItem(p.id)} className="text-blue-900 hover:text-rose-600">×</button>
                     </span>
                   ))}
                 </div>

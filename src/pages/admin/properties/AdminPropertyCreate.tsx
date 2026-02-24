@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Spinner from "../../../components/Spinner";
 import { toast } from "sonner";
@@ -6,13 +6,14 @@ import { Building2 } from "lucide-react";
 import { usePropertiesStore } from "../../../stores/properties";
 
 const Input = (props: any) => <input className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800" {...props} />;
-const Textarea = (props: any) => <textarea className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800" {...props} />;
+// const Textarea = (props: any) => <textarea className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800" {...props} />;
 const Select = (props: any) => <select className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800" {...props} />;
 const Checkbox = (props: any) => <input type="checkbox" className="h-4 w-4 border-slate-300 rounded" {...props} />;
 
 export default function AdminPropertyCreate() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const rteRef = useRef<HTMLDivElement | null>(null);
   const [form, setForm] = useState<any>({
     title: "",
     description: "",
@@ -40,6 +41,13 @@ export default function AdminPropertyCreate() {
   };
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.checked });
+  };
+  const exec = (cmd: string, val?: string) => {
+    document.execCommand(cmd, false, val);
+    setForm((prev: any) => ({ ...prev, description: rteRef.current?.innerHTML || "" }));
+  };
+  const syncHtml = () => {
+    setForm((prev: any) => ({ ...prev, description: rteRef.current?.innerHTML || "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,7 +122,25 @@ export default function AdminPropertyCreate() {
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                <Textarea name="description" value={form.description} onChange={handleChange} rows={5} />
+                <div className="border rounded-md">
+                  <div className="flex flex-wrap gap-2 p-2 border-b bg-slate-50">
+                    <button type="button" onClick={() => exec("bold")} className="px-2 py-1 text-sm border rounded bg-white">B</button>
+                    <button type="button" onClick={() => exec("italic")} className="px-2 py-1 text-sm border rounded bg-white"><em>I</em></button>
+                    <button type="button" onClick={() => exec("underline")} className="px-2 py-1 text-sm border rounded bg-white"><u>U</u></button>
+                    <button type="button" onClick={() => exec("insertUnorderedList")} className="px-2 py-1 text-sm border rounded bg-white">• List</button>
+                    <button type="button" onClick={() => exec("insertOrderedList")} className="px-2 py-1 text-sm border rounded bg-white">1. List</button>
+                    <button type="button" onClick={() => { const url = prompt("Link URL"); if (url) exec("createLink", url); }} className="px-2 py-1 text-sm border rounded bg-white">Link</button>
+                    <button type="button" onClick={() => exec("removeFormat")} className="px-2 py-1 text-sm border rounded bg-white">Clear</button>
+                  </div>
+                  <div
+                    ref={rteRef}
+                    contentEditable
+                    className="min-h-[160px] p-3 focus:outline-none prose max-w-none"
+                    onInput={syncHtml}
+                    dangerouslySetInnerHTML={{ __html: form.description || "" }}
+                  />
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Rich text supported. HTML is stored.</p>
               </div>
             </div>
           </div>
