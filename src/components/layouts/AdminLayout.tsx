@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth";
-import { LogOut, Home, Calendar, Mic2, Building2, FileText, Menu } from "lucide-react";
+import { LogOut, Home, Calendar, Mic2, Building2, FileText, Menu, DollarSign, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -33,6 +33,14 @@ export default function AdminLayout() {
         <div className="pt-2 text-xs uppercase text-blue-300 px-4">Properties</div>
         <Link to="/admin/properties" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors">
           <Building2 size={20} /> Properties
+        </Link>
+        {/* Sales & Tracking */}
+        <div className="pt-2 text-xs uppercase text-blue-300 px-4">Sales & Tracking</div>
+        <Link to="/admin/deals" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors">
+          <DollarSign size={20} /> Deals & Commissions
+        </Link>
+        <Link to="/admin/realtors" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors">
+          <Users size={20} /> Realtors
         </Link>
         {/* Podcasts */}
         <div className="pt-2 text-xs uppercase text-blue-300 px-4">Podcasts</div>

@@ -22,6 +22,7 @@ import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import PaymentCallbackPage from "./pages/PaymentCallbackPage";
 import AboutPage from "./pages/AboutPage";
+import RealtorOnboardingPage from "./pages/realtor/RealtorOnboardingPage";
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -41,6 +42,8 @@ import AdminPropertyDetail from "./pages/admin/properties/AdminPropertyDetail";
 import AdminPropertyEdit from "./pages/admin/properties/AdminPropertyEdit";
 import AdminPropertyCreate from "./pages/admin/properties/AdminPropertyCreate";
 import AdminPropertyContacts from "./pages/admin/properties/AdminPropertyContacts";
+import AdminDealsPage from "./pages/admin/deals/AdminDealsPage";
+import AdminRealtorsPage from "./pages/admin/realtors/AdminRealtorsPage";
 import AdminPodcastsList from "./pages/admin/podcasts/AdminPodcastsList";
 import AdminPodcastDetail from "./pages/admin/podcasts/AdminPodcastDetail";
 import AdminPodcastEdit from "./pages/admin/podcasts/AdminPodcastEdit";
@@ -73,6 +76,7 @@ function AppRoutes() {
         {/* <Route path="/live" element={<LivePage />} /> */}
         {/* <Route path="/live/listen" element={<LiveListenerPage />} /> */}
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/realtor-onboarding" element={<RealtorOnboardingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -107,6 +111,9 @@ function AppRoutes() {
         <Route path="/admin/properties/new" element={<AdminPropertyCreate />} />
         <Route path="/admin/properties/:id/edit" element={<AdminPropertyEdit />} />
         <Route path="/admin/properties/:id/contacts" element={<AdminPropertyContacts />} />
+        {/* Deals */}
+        <Route path="/admin/deals" element={<AdminDealsPage />} />
+        <Route path="/admin/realtors" element={<AdminRealtorsPage />} />
         {/* Podcasts */}
         <Route path="/admin/podcasts" element={<AdminPodcastsList />} />
         <Route path="/admin/podcasts/:id" element={<AdminPodcastDetail />} />
